@@ -22,17 +22,17 @@
 
       <div class="user-item-container" data-id="user-1">
         <!-- 회원 정보 -->
-        <div class="user-item">
+<!--        <div class="user-item" v-for="item in usersDtos" :key="item.id">
           <div class="user-info">
             <div class="user-image">
               <img src="@/assets/images/1.png" alt="운동 아이콘">
             </div>
             <div class="user-text">
-              <div class="user-title"></div>
-              <div class="user-descript gray-text">28세 | 마지막수업: 24/12/20</div>
+              <div class="user-title">{{item.userName}}</div>
+              <div class="user-descript gray-text">{{item.age}}세 | 마지막수업: 24/12/20</div>
             </div>
           </div>
-        </div>
+        </div>-->
         <!--회원정보-->
 
       </div>
@@ -57,6 +57,9 @@ import ManageHeader from "~/components/user/manage/ManageHeader.vue";
 import {useRuntimeConfig, useAsyncData} from "#app";
 
 const config = useRuntimeConfig();
+// 반응형 데이터 선언
+let usersDtos = ref([]);
+
 const {data, error} = await useAsyncData('fetchTrainingMember', async () => {
   console.log('API Base URL:', config.public.apiBase);
   const response = await $fetch(`${config.public.apiBase}/trainer/member`,{
@@ -66,7 +69,7 @@ const {data, error} = await useAsyncData('fetchTrainingMember', async () => {
     }
   });
   console.log(response);
-  return response;
+  //usersDtos.value = response.data.usersDtos;
 });
 
 

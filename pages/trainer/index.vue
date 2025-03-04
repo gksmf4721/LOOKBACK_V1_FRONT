@@ -60,13 +60,17 @@ const config = useRuntimeConfig();
 // 반응형 데이터 선언
 let usersDtos = ref([]);
 
+
+//TODO 1) 리프레시 토큰 확인 후 인터셉터로 변경
 const {data, error} = await useAsyncData('fetchTrainingMember', async () => {
+  console.log('API Base URL:', config.public.apiBase);
   const response = await $fetch(`${config.public.apiBase}/trainer/member`,{
     method:'GET',
     params: {
       trainerId: '1'
     }
   });
+  console.log(response);
   //usersDtos.value = response.data.usersDtos;
 });
 

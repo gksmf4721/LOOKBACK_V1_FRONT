@@ -69,7 +69,9 @@
 </template>
 
 <script setup lang="ts">
+import {useRouter} from "#vue-router";
 
+const router = useRouter();
 //data
 import {useRuntimeConfig} from "#app";
 
@@ -103,25 +105,29 @@ const prevStep = () => {
     }, 200); // 200ms 후 step2 등장
   }
 };
-
 const token = localStorage.getItem("jwtToken");
-
-console.log(token);
+const refreshToken = localStorage.getItem("refreshToken");
 const config = useRuntimeConfig();
+
 const submit = async() => {
-  console.log("여기도 " + token);
   const response = await $fetch(`${config.public.apiBase}/user/updateBasicInfo`,{
     method:'POST',
-    headers: new Headers({
+    headers: {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }),
+      'Content-Type': 'application/json',
+      'Refresh-Token' : `${refreshToken}`
+    },
     params: {
       weight : weight.value,
       height : height.value,
-      userType : selectedType.value === '트레이너' ? 'Y' : 'N'
+      userType : selectedType.value === '트레이너' ? 'TRAINER' : 'MEMBER'
     }
   });
+  if(response.result.userType === "TRAINER") {
+    await router.replace('/trainer');
+  } else {
+    console.log("아직 안만듬");
+  }
 }
 
 

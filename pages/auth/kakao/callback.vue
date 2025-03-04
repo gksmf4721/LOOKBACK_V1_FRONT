@@ -22,12 +22,12 @@ onMounted(async () => {
     });
     localStorage.setItem('jwtToken', response.jwtToken);
     localStorage.setItem('refreshToken', response.refreshToken);
-    debugger;
+
     // ✅ 회원가입 미완료 상태라면 '/signup'으로 이동
     if (response.isProfileComplete == 'N') {
-      router.replace('/sign');
+      await router.replace('/sign');
     } else {
-      router.replace('/');
+      await router.replace('/');
     }
   } catch (err) {
     console.error("❌ 로그인 에러:", err);

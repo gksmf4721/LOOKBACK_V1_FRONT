@@ -68,6 +68,7 @@ const {data, error} = await useAsyncData('fetchTrainingMember', async () => {
     }
   });
   //usersDtos.value = response.data.usersDtos;
+
 });
 
 

@@ -5,7 +5,9 @@
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
+            <Transition name="slide">
             <button class="back-btn" v-if="selectedStep === 2" @click="prevStep"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            </Transition>
           </div>
         </div>
       </div>
@@ -29,7 +31,7 @@
         </div>
       </div>
     </Transition>
-    <Transition name="slide">
+    <Transition :name="transitionName">
       <div v-if="selectedStep ===2" class="step2">
         <div class="">
           <p class="join-title ">
@@ -60,9 +62,28 @@
         </div>
       </div>
     </Transition>
+    <Transition name="slide">
+      <div v-if="selectedStep === 3" class="step3">
+        <div class="">
+          <p class="join-title" >
+            가입이 완료 되었어요!
+          </p>
+          <br/>
+          <p class="join-title">
+            {{ finalMessage }}
+          </p>
+          <p class="join-title" v-if="user.userType == 'TRAINER'">
+            이제 회원님들의 수업기록을 더 편하게 관리해보세요!
+          </p>
+        </div>
+      </div>
+    </Transition>
     <footer class="fixed-footer-btn">
-      <button type="button" @click="selectedStep ===1 ? nextStep() : submit()" class="create-record-btn">
-        {{selectedStep === 1 ? '다음' : '저장'}}
+      <button type="button"
+              @click="selectedStep ===1 ? nextStep() :
+               selectedStep ===2 ? submit() : movePage()"
+              class="create-record-btn">
+        {{selectedStep === 1 ? '다음' : '완료'}}
       </button>
     </footer>
   </div>
@@ -70,14 +91,14 @@
 
 <script setup lang="ts">
 import {useRouter} from "#vue-router";
-
+import {api} from "~/store/api";
+import {computed} from "vue";
 const router = useRouter();
-//data
-import {useRuntimeConfig} from "#app";
 
 const selectedType = ref("회원");
 const weight = ref("");
 const height = ref("");
+const user = ref({});
 
 const types = ['회원','트레이너'];
 const selectedStep = ref(1);
@@ -105,32 +126,47 @@ const prevStep = () => {
     }, 200); // 200ms 후 step2 등장
   }
 };
-const token = localStorage.getItem("jwtToken");
-const refreshToken = localStorage.getItem("refreshToken");
-const config = useRuntimeConfig();
 
-const submit = async() => {
-  const response = await $fetch(`${config.public.apiBase}/user/updateBasicInfo`,{
-    method:'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Refresh-Token' : `${refreshToken}`
-    },
-    params: {
-      weight : weight.value,
-      height : height.value,
-      userType : selectedType.value === '트레이너' ? 'TRAINER' : 'MEMBER'
-    }
-  });
-  if(response.result.userType === "TRAINER") {
-    await router.replace('/trainer');
+const movePage = () => {
+  if (user.value.userType === "TRAINER") {
+    router.replace("/trainer");
   } else {
     console.log("아직 안만듬");
   }
 }
+const submit = () => {
+  api().post(`/user/updateBasicInfo`,{
+      weight: weight.value,
+      height: height.value,
+      userType: selectedType.value === "트레이너" ? "TRAINER" : "MEMBER",
+  })
+  .then((response) => {
+        user.value = response.result;
 
+        const step2 = document.querySelector('.step2');
+        if (step2) {
+          step2.style.opacity = '0'; // 즉시 사라지게 만듦
+          setTimeout(() => {
+            selectedStep.value = 3;
+          }, 200); // 200ms 후 step2 등장
+        }
+  })
+  .catch((error) => {
+    console.error("API 요청 실패:", error);
+  });
+};
+const transitionName = computed(() => {
+  return selectedStep.value == 3 ? 'fade' : 'slide'
+})
 
+const finalMessage = computed(() => {
+  if(user.value && Object.keys(user.value).length != 0) {
+    return user.value.userType == 'TRAINER'
+        ? '마이페이지에서 트레이너님의 프로필을 완성해주세요.'
+        : '이제 트레이너님과 함께 회원님의 운동을 기록해보세요!'
+  }
+  return '';
+})
 </script>
 
 <style scoped>

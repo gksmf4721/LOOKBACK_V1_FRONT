@@ -16,13 +16,11 @@
 </template>
 
 <script setup lang="ts">
+import {api} from "~/store/api";
 
-import {useRuntimeConfig} from "#app";
-
-const config = useRuntimeConfig();
 const loginWithKakao = async () => {
-  const { data } = await useFetch(`${config.public.apiBase}/auth/kakao/login`);
-  window.location.href = data.value;
+  const response = await api().get(`/auth/kakao/login`);
+  window.location.href = response;
 };
 </script>
 

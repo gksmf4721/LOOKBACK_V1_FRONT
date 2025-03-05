@@ -5,14 +5,11 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080',
     }
   },
-
   devServer: {
     port: 3000, // 포트 번호 고정
     host: '0.0.0.0' // 외부 접근 허용 (필요 시 설정)
   },
-
   css: ['@/assets/css/styles.css'],
-
   app: {
     head: {
       title: '회원님, 운동하셔야죠.',
@@ -26,6 +23,9 @@ export default defineNuxtConfig({
       script: [{ src: 'https://cdn.jsdelivr.net/npm/chart.js' }]
     }
   },
-
-  compatibilityDate: '2025-02-25'
+  imports: {
+    dirs: ["plugins"], // 플러그인이 있는 디렉토리를 자동으로 탐지
+  },
+  compatibilityDate: '2025-02-25',
+  modules: ["@pinia/nuxt"],
 })

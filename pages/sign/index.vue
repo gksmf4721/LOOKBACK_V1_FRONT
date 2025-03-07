@@ -6,84 +6,22 @@
         <div>
           <div class="back-btn-box-text">
             <Transition name="slide">
-            <button class="back-btn" v-if="selectedStep === 2" @click="prevStep"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+              <button class="back-btn" v-if="userStore.selectedStep === 2" @click="prevStep"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
             </Transition>
           </div>
         </div>
       </div>
     </header>
     <!-- Date Section -->
-    <Transition name="fade">
-      <div v-if="selectedStep === 1"  class="step1">
-        <div class="">
-          <p class="join-title ">
-            반가워요! <br/>
-            당신은 누구인가요?
-          </p>
-        </div>
-        <div class="user-type-container">
-          <!-- 기본으로 선택되어 있는 회원 박스 -->
-          <div class="user-type-box"
-               v-for="item in types"
-               @click="selectType(item)"
-               :class="{active : selectedType == item}"
-               data-type="member">{{ item }}</div>
-        </div>
-      </div>
-    </Transition>
-    <Transition :name="transitionName">
-      <div v-if="selectedStep ===2" class="step2">
-        <div class="">
-          <p class="join-title ">
-            회원님의 키와 몸무게를 알려주세요.
-          </p>
-        </div>
-        <div class="create-records">
-          <!-- 키 입력 -->
-          <div class="record-section bottom-30">
-            <label for="record-date">키</label>
-            <div class="record-section bottom-30">
-              <div class="input-wrapper">
-                <input type="text" v-model="height" id="record-display" />
-                <span class="input-unit">cm</span>
-              </div>
-            </div>
-          </div>
-          <!-- 몸무게 입력 -->
-          <div class="record-section bottom-30">
-            <label for="record-date">몸무게</label>
-            <div class="record-section bottom-30">
-              <div class="input-wrapper">
-                <input type="text" v-model="weight" id="record-display" />
-                <span class="input-unit">kg</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
-    <Transition name="slide">
-      <div v-if="selectedStep === 3" class="step3">
-        <div class="">
-          <p class="join-title" >
-            가입이 완료 되었어요!
-          </p>
-          <br/>
-          <p class="join-title">
-            {{ finalMessage }}
-          </p>
-          <p class="join-title" v-if="user.userType == 'TRAINER'">
-            이제 회원님들의 수업기록을 더 편하게 관리해보세요!
-          </p>
-        </div>
-      </div>
-    </Transition>
+    <Sign1></Sign1>
+    <Sign2></Sign2>
+    <SignComplete></SignComplete>
     <footer class="fixed-footer-btn">
       <button type="button"
-              @click="selectedStep ===1 ? nextStep() :
-               selectedStep ===2 ? submit() : movePage()"
+              @click="userStore.selectedStep ===1 ? nextStep() :
+               userStore.selectedStep ===2 ? submit() : movePage()"
               class="create-record-btn">
-        {{selectedStep === 1 ? '다음' : '완료'}}
+        {{userStore.selectedStep === 1 ? '다음' : '완료'}}
       </button>
     </footer>
   </div>
@@ -91,20 +29,18 @@
 
 <script setup lang="ts">
 import {useRouter} from "#vue-router";
-import {api} from "~/store/api";
 import {computed} from "vue";
+import {useUserStore} from "~/store/user";
+import Sign1 from "~/components/user/sign/Sign1.vue";
+import {useUser} from "~/composables/useUser";
+import Sign2 from "~/components/user/sign/Sign2.vue";
+import {useToast} from "vue-toastification";
+import SignComplete from "~/components/user/sign/SignComplete.vue";
+
 const router = useRouter();
+const userStore = useUserStore();
+const toast = useToast();
 
-const selectedType = ref("회원");
-const weight = ref("");
-const height = ref("");
-const user = ref({});
-
-const types = ['회원','트레이너'];
-const selectedStep = ref(1);
-const selectType = (type) => {
-  selectedType.value = type;
-}
 
 // ✅ setTimeout으로 step1을 먼저 숨기고 step2를 등장시킴
 const nextStep = () => {
@@ -112,7 +48,7 @@ const nextStep = () => {
   if (step1) {
     step1.style.opacity = '0'; // 즉시 사라지게 만듦
     setTimeout(() => {
-      selectedStep.value = 2;
+      userStore.setSelectedStep(2);
     }, 200); // 200ms 후 step2 등장
   }
 };
@@ -122,51 +58,55 @@ const prevStep = () => {
   if (step1) {
     step1.style.opacity = '0'; // 즉시 사라지게 만듦
     setTimeout(() => {
-      selectedStep.value = 1;
+      userStore.setSelectedStep(1);
     }, 200); // 200ms 후 step2 등장
   }
 };
 
 const movePage = () => {
-  if (user.value.userType === "TRAINER") {
+  if (userStore.user.userType === "TRAINER") {
     router.replace("/trainer");
   } else {
     console.log("아직 안만듬");
   }
 }
-const submit = () => {
-  api().post(`/user/updateBasicInfo`,{
-      weight: weight.value,
-      height: height.value,
-      userType: selectedType.value === "트레이너" ? "TRAINER" : "MEMBER",
-  })
-  .then((response) => {
-        user.value = response.result;
 
-        const step2 = document.querySelector('.step2');
-        if (step2) {
-          step2.style.opacity = '0'; // 즉시 사라지게 만듦
-          setTimeout(() => {
-            selectedStep.value = 3;
-          }, 200); // 200ms 후 step2 등장
-        }
-  })
-  .catch((error) => {
-    console.error("API 요청 실패:", error);
-  });
-};
-const transitionName = computed(() => {
-  return selectedStep.value == 3 ? 'fade' : 'slide'
-})
-
-const finalMessage = computed(() => {
-  if(user.value && Object.keys(user.value).length != 0) {
-    return user.value.userType == 'TRAINER'
-        ? '마이페이지에서 트레이너님의 프로필을 완성해주세요.'
-        : '이제 트레이너님과 함께 회원님의 운동을 기록해보세요!'
+const submit = async() => {
+  if (!userStore.height || isNaN(Number(userStore.height)) || Number(userStore.height) <= 0) {
+    toast.error("올바른 키를 입력해주세요.");
+    return;
   }
-  return '';
-})
+
+  if (!userStore.weight || isNaN(Number(userStore.weight)) || Number(userStore.weight) <= 0) {
+    toast.error("올바른 몸무게를 입력해주세요.");
+    return;
+  }
+  const response = await useUser().updateBasicInfo({
+    weight: userStore.weight,
+    height: userStore.height,
+    userType: userStore.selectedType === "트레이너" ? "TRAINER" : "MEMBER",
+  })
+  userStore.setUser(response.result);
+
+  const step2 = document.querySelector('.step2');
+  const step3 = document.querySelector('.step3');
+
+  if (step2 && step3) {
+    step2.style.transition = "opacity 0.3s ease-out"; // ✅ 사라질 때 부드럽게
+    step3.style.transition = "opacity 0.5s ease-in, transform 0.5s ease-in-out"; // ✅ 등장할 때 fade-in
+
+    step2.style.opacity = "0"; // ✅ step2 페이드 아웃
+    step3.style.opacity = "0"; // ✅ step3도 초기에 숨김
+
+    userStore.setSelectedStep(3);
+    setTimeout(() => {
+      step3.style.opacity = "1"; // ✅ step3가 서서히 등장
+      step3.style.transform = "translateY(0)"; // ✅ 아래에서 올라오는 효과 추가
+    }, 300); // step2가 사라진 후 step3 등장
+  }
+
+};
+
 </script>
 
 <style scoped>
@@ -177,7 +117,7 @@ const finalMessage = computed(() => {
   height: 100%;
   overflow: hidden;
 }
-  /* 오른쪽 슬라이드 애니메이션 */
+/* 오른쪽 슬라이드 애니메이션 */
 .slide-enter-active, .slide-leave-active {
   transition: transform 0.3s ease-in-out;
 }

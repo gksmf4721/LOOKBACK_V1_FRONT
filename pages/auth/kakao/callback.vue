@@ -11,15 +11,18 @@ onMounted(async () => {
   if (!code) {
     console.error("❌ 인증 코드가 없습니다.");
     router.replace(redirect);
+    debugger;
     return;
   }
 
   const config = useRuntimeConfig();
   try {
+    debugger;
     const response = await $fetch(`${config.public.apiBase}/auth/kakao/callback`, {
       method : 'GET',
       params: { code }
     });
+    debugger;
     localStorage.setItem('jwtToken', response.jwtToken);
     localStorage.setItem('refreshToken', response.refreshToken);
 
@@ -27,7 +30,11 @@ onMounted(async () => {
     if (response.isProfileComplete == 'N') {
       await router.replace('/sign');
     } else {
-      await router.replace('/');
+      if(response.userType == 'MEMBER'){
+        await router.replace('/');
+      } else {
+        await router.replace('/trainer');
+      }
     }
   } catch (err) {
     console.error("❌ 로그인 에러:", err);

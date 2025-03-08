@@ -22,7 +22,7 @@
 
       <div class="user-item-container" data-id="user-1">
         <!-- 회원 정보 -->
-<!--        <div class="user-item" v-for="item in usersDtos" :key="item.id">
+        <div class="user-item" v-for="item in memberStore.members" :key="item.id">
           <div class="user-info">
             <div class="user-image">
               <img src="@/assets/images/1.png" alt="운동 아이콘">
@@ -32,9 +32,8 @@
               <div class="user-descript gray-text">{{item.age}}세 | 마지막수업: 24/12/20</div>
             </div>
           </div>
-        </div>-->
+        </div>
         <!--회원정보-->
-
       </div>
     </div>
     <!-- 정렬 모달 -->
@@ -55,24 +54,15 @@
 <script setup lang="ts">
 import ManageHeader from "~/components/user/manage/ManageHeader.vue";
 import {useRuntimeConfig, useAsyncData} from "#app";
+import {api} from "~/store/api";
+import {useMemberStore} from "~/store/member";
 
-const config = useRuntimeConfig();
-// 반응형 데이터 선언
-let usersDtos = ref([]);
+  const memberStore = useMemberStore();
 
-
-//TODO 1) 리프레시 토큰 확인 후 인터셉터로 변경
-const {data, error} = await useAsyncData('fetchTrainingMember', async () => {
-  console.log('API Base URL:', config.public.apiBase);
-  const response = await $fetch(`${config.public.apiBase}/trainer/member`,{
-    method:'GET',
-    params: {
-      trainerId: '1'
-    }
+  const {data, error} = await useAsyncData('fetchTrainingMember', async () => {
+    const response = await api().get(`/trainer/member`);
+    memberStore.setMembers(response.result);
   });
-  console.log(response);
-  //usersDtos.value = response.data.usersDtos;
-});
 
 
 </script>

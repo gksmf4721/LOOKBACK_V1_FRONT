@@ -17,12 +17,10 @@ onMounted(async () => {
 
   const config = useRuntimeConfig();
   try {
-    debugger;
     const response = await $fetch(`${config.public.apiBase}/auth/kakao/callback`, {
       method : 'GET',
       params: { code }
     });
-    debugger;
     localStorage.setItem('jwtToken', response.jwtToken);
     localStorage.setItem('refreshToken', response.refreshToken);
 

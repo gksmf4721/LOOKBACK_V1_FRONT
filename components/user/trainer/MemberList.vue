@@ -3,7 +3,7 @@
     <div class="default-nav">
       <div>총 28명</div>
       <div class="default-nav-item">
-        <button class="sort-btn">
+        <button @click.stop="clickSort" class="sort-btn">
           <img src="@/assets/icons//swap-vertical.svg" alt="">
           <span>
                 정렬
@@ -18,14 +18,15 @@
 
       <div class="user-item-container" data-id="user-1">
         <!-- 회원 정보 -->
-        <div class="user-item" v-for="item in memberStore.members" :key="item.id">
+        <div class="user-item" v-for="item in membersList" :key="item.id">
           <div class="user-info">
             <div class="user-image">
               <img src="@/assets/images/1.png" alt="운동 아이콘">
             </div>
             <div class="user-text">
               <div class="user-title">{{item.userName}}</div>
-              <div class="user-descript gray-text">{{item.age}}세 | 마지막수업: {{item.latestCreatedAt}}</div>
+              <div v-if="!item.isNew" class="user-descript gray-text">{{item.age}}세 | 마지막수업: {{item.latestCreatedAt}}</div>
+              <div v-if="item.isNew" class="user-descript gray-text">{{item.age}}세 | 새로운 회원</div>
             </div>
           </div>
         </div>
@@ -33,10 +34,9 @@
       </div>
     </div>
     <!-- 정렬 모달 -->
-    <div id="sortModal" class="user-sort-modal hidden">
+    <div v-if="isShowSortModal" id="sortModal" class="user-sort-modal">
       <ul class="sort-options">
-        <li class="sort-option" data-value="recommend">가나다순</li>
-        <li class="sort-option" data-value="newest">최근 수업순</li>
+        <li @click="selectSort(item.sort)" v-for="item in sortTypes" class="sort-option" >{{item.name}}</li>
       </ul>
     </div>
   </div>
@@ -44,8 +44,49 @@
 
 <script setup lang="ts">
   import {useMemberStore} from "~/store/member";
+  import {computed} from "vue";
 
+  //data
   const memberStore = useMemberStore();
+  const isShowSortModal = ref(false);
+  const sortTypes = ref([
+      {name: '가나다순', sort: 'userName'},
+      {name: '최근 수업순', sort: 'recent'}
+  ])
+
+  //lifeCycle
+  onMounted(async () => {
+    const data = {sortBy : ''}
+    const response = await useMember().trainerMember(data);
+    memberStore.setMembers(response.result);
+  });
+
+  //method
+  const selectSort = async (sort) => {
+    const data = {sortBy : sort}
+    const response = await useMember().trainerMember(data);
+    memberStore.setMembers(response.result);
+    clickSort();
+  }
+
+  const clickSort = () => {
+    isShowSortModal.value = !isShowSortModal.value;
+  }
+
+  //getters
+  const membersList = computed(() => {
+    if(memberStore.useFilter){
+      return memberStore.filteredMembers.map(m => ({
+        ...m,
+        isNew : m.latestCreatedAt == null ? true : false
+      }))
+    } else {
+      return memberStore.members.map(m => ({
+        ...m,
+        isNew : m.latestCreatedAt == null ? true : false
+      }))
+    }
+  })
 
 
 </script>

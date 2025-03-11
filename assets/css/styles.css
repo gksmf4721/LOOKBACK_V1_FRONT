@@ -1523,8 +1523,7 @@ input::placeholder {
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  display: none; /* 기본적으로 숨김 */
+  z-index: 1000; /* 기본적으로 숨김 */
 }
 
 .user-sort-modal.show {

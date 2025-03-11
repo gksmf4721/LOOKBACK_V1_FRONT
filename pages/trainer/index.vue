@@ -14,7 +14,6 @@
 
 <script setup lang="ts">
   import ManageHeader from "~/components/user/manage/ManageHeader.vue";
-  import {useRuntimeConfig, useAsyncData} from "#app";
   import {api} from "~/store/api";
   import {useMemberStore} from "~/store/member";
   import MemberList from "~/components/user/trainer/MemberList.vue";
@@ -22,10 +21,6 @@
   const memberStore = useMemberStore();
   const category = ref(['회원관리','마이페이지']);
   const selectedCategory = ref('회원관리');
-  onMounted(async () => {
-      const response = await api().get(`/trainer/member`);
-      memberStore.setMembers(response.result);
-  });
 
   const selectCategory = (category) => {
     selectedCategory.value = category;

@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="default-nav">
-      <div>총 28명</div>
+      <div v-if="memberStore.useFilter">총 {{memberStore.filteredMembersCount}}명</div>
+      <div v-if="!memberStore.useFilter">총 {{memberStore.membersCount}}명</div>
       <div class="default-nav-item">
         <button @click.stop="clickSort" class="sort-btn">
           <img src="@/assets/icons//swap-vertical.svg" alt="">
@@ -16,10 +17,10 @@
       <!-- 회원이 없을 경우 표시될 문구 -->
       <div style="display: none;" class="no-users-message">등록하신 회원이 없습니다.</div>
 
-      <div class="user-item-container" data-id="user-1">
+      <div class="user-item-container">
         <!-- 회원 정보 -->
         <div class="user-item" v-for="item in membersList" :key="item.id">
-          <div class="user-info">
+          <NuxtLink :to="`/record/${item.userId}`" class="user-info">
             <div class="user-image">
               <img src="@/assets/images/1.png" alt="운동 아이콘">
             </div>
@@ -28,7 +29,7 @@
               <div v-if="!item.isNew" class="user-descript gray-text">{{item.age}}세 | 마지막수업: {{item.latestCreatedAt}}</div>
               <div v-if="item.isNew" class="user-descript gray-text">{{item.age}}세 | 새로운 회원</div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
         <!--회원정보-->
       </div>
@@ -58,14 +59,16 @@
   onMounted(async () => {
     const data = {sortBy : ''}
     const response = await useMember().trainerMember(data);
-    memberStore.setMembers(response.result);
+    memberStore.setMembers(response.result.list);
+    memberStore.setMembersCount(response.result.list.length);
   });
 
   //method
   const selectSort = async (sort) => {
     const data = {sortBy : sort}
     const response = await useMember().trainerMember(data);
-    memberStore.setMembers(response.result);
+    memberStore.setMembers(response.result.list);
+    memberStore.setMembersCount(response.result.list.length);
     clickSort();
   }
 
@@ -86,6 +89,7 @@
         isNew : m.latestCreatedAt == null ? true : false
       }))
     }
+
   })
 
 

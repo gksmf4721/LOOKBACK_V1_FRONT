@@ -1,6 +1,5 @@
 import {api} from "~/store/api";
 
-
 export const useUser = () => {
     const updateBasicInfo = async (data) => {
         try {

@@ -12,7 +12,9 @@
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
-            <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            <NuxtLink :to="`/trainer`" >
+              <button type="button" class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            </NuxtLink>
             <div class="default-back-title">이영훈</div>
           </div>
         </div>
@@ -149,11 +151,17 @@
 <script setup lang="ts">
 
 import {useRecordStore} from "~/store/record";
-let recordStore = useRecordStore();
+const recordStore = useRecordStore();
 
+const route = useRoute();
+const id = route.params.id;
+const type = 'TRAINER';
 onMounted(async () => {
-  
+  const response = await useRecord().recordList({userId: id, userType: type});
+  debugger;
+
 })
+
 </script>
 
 <style scoped>

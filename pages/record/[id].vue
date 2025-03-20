@@ -15,7 +15,7 @@
             <NuxtLink :to="`/trainer`" >
               <button type="button" class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
             </NuxtLink>
-            <div class="default-back-title">이영훈</div>
+            <div class="default-back-title">{{member.userName}}</div>
           </div>
         </div>
         <div class="default-header-item">
@@ -31,9 +31,11 @@
 
     <div class="search-filters default-nav border-none">
       <div class="filter-buttons scrollable">
-        <button class="filter-btn active">전체(52)</button>
-        <button class="filter-btn">PT</button>
-        <button class="filter-btn">개인</button>
+        <button v-for="item in subCategory"
+                :class="{active : item.key == selectedSubCategory}"
+                @click="selectSubCategory(item.key)"
+                class="filter-btn"
+        >{{item.name}}{{item.key == selectedSubCategory ? `(${recordCount})` : ''}}</button>
       </div>
       <!-- 1번: 셀렉트 버튼 -->
       <div class="custom-select">
@@ -96,39 +98,23 @@
 
       <div class="record-item-container" data-id="record-1">
         <!-- 기록 정보 -->
-        <a>
+        <a v-for="item in records">
           <div class="record-item">
             <div class="record-info">
               <div class="record-image">
-                <div class="circle personal">개인</div>
+                <div class="circle personal">{{item.pt ? 'PT' : '개인'}}</div>
               </div>
               <div class="record-text">
-                <div class="record-title">1월 10일 (금)</div>
+                <div class="record-title">{{item.recordDate}} ({{item.dayOfWeek}})</div>
                 <div class="record-descript">
-                  <div>근력, 스트레칭, 유산소</div>
-                  <div class="gray-text">&nbsp;| 전신, 등, 가슴, 어깨, 하체, 복부</div>
+                  <div>{{item.recordOfExerciseTypes.join(', ')}}</div>
+                  <div class="gray-text" v-if="item.usedMuscleNames.length != 0">|
+                    {{item.usedMuscleNames.join(', ')}}</div>
                 </div>
               </div>
             </div>
           </div>
         </a>
-        <a>
-          <div class="record-item">
-            <div class="record-info">
-              <div class="record-image">
-                <div class="circle personal">PT</div>
-              </div>
-              <div class="record-text">
-                <div class="record-title">1월 10일 (금)</div>
-                <div class="record-descript">
-                  <div>근력, 스트레칭, 유산소</div>
-                  <div class="gray-text">&nbsp;| 전신, 등, 가슴, 어깨, 하체, 복부</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-
         <!-- 기록 정보 -->
       </div>
     </div>
@@ -151,16 +137,37 @@
 <script setup lang="ts">
 
 import {useRecordStore} from "~/store/record";
+import {computed} from "vue";
 const recordStore = useRecordStore();
 
+const subCategory = ref([{key: 'all', name: '전체'},
+                        {key: 'pt', name: 'PT'},
+                        {key: 'personal', name: '개인'}]);
+const selectedSubCategory = ref('all');
 const route = useRoute();
 const id = route.params.id;
-const type = 'TRAINER';
-onMounted(async () => {
-  const response = await useRecord().recordList({userId: id, userType: type});
-  debugger;
+const userType = 'TRAINER';
+const records = ref([]);
+const member = ref({});
 
+onMounted(async () => {
+  const response = await useRecord().recordList({userId: id, userType: userType});
+  member.value = response.result.user
+  records.value = response.result.list;
 })
+
+const recordCount = computed(() => {
+  return records.value.length;
+})
+
+const selectSubCategory = async (subCategory) => {
+  selectedSubCategory.value = subCategory;
+  const response = await useRecord().recordList({userId: id, userType: userType, type: subCategory});
+  member.value = response.result.user;
+  records.value = response.result.list;
+}
+
+
 
 </script>
 

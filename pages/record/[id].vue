@@ -25,99 +25,20 @@
     </header>
     <!-- 카테고리 메뉴 -->
     <nav class="category-nav">
-      <button class="category-btn active">운동기록</button>
-      <button class="category-btn">프로필</button>
+      <button v-for="item in category"
+              :class="{active : item.key == selectedCategory}"
+              @click="selectCategory(item.key)"
+              class="category-btn">{{ item.name }}</button>
     </nav>
 
-    <div class="search-filters default-nav border-none">
-      <div class="filter-buttons scrollable">
-        <button v-for="item in subCategory"
-                :class="{active : item.key == selectedSubCategory}"
-                @click="selectSubCategory(item.key)"
-                class="filter-btn"
-        >{{item.name}}{{item.key == selectedSubCategory ? `(${recordCount})` : ''}}</button>
-      </div>
-      <!-- 1번: 셀렉트 버튼 -->
-      <div class="custom-select">
-        <button class="select-btn">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="control-icon" d="M14.1667 5L14.1667 15" stroke="black" stroke-linecap="round"/>
-            <path class="control-icon" d="M10 5L10 15" stroke="black" stroke-linecap="round"/>
-            <path class="control-icon" d="M5.83333 5L5.83333 15" stroke="black" stroke-linecap="round"/>
-            <path class="control-icon" d="M4.16666 6.66667H7.5" stroke="black" stroke-linecap="round"/>
-            <path class="control-icon" d="M8.33334 13.3333H11.6667" stroke="black" stroke-linecap="round"/>
-            <path class="control-icon" d="M12.5 10H15.8333" stroke="black" stroke-linecap="round"/>
-          </svg>
-          <span>필터</span>
-        </button>
-      </div>
-    </div>
-    <div class="profile-container" style="display: none;">
-      <div class="profile-image">
-        <img src="@/assets/images/userProfile.jpeg" alt="사용자 이미지">
-      </div>
-      <div class="profile-info">
-        <div class="profile-row">
-          <span class="profile-label gray-text">이름</span>
-          <span class="profile-value">이영훈</span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-label gray-text">생년월일</span>
-          <span class="profile-value">1992.06.27(23세)</span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-label gray-text">성별</span>
-          <span class="profile-value">남자</span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-label gray-text">전화번호</span>
-          <span class="profile-value">010-2725-7349</span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-label gray-text">이메일</span>
-          <span class="profile-value">koon270692@gmail.com</span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-label gray-text">키</span>
-          <span class="profile-value">200cm</span>
-        </div>
-        <div class="profile-row">
-          <span class="profile-label gray-text">몸무게</span>
-          <span class="profile-value">80kg</span>
-        </div>
-
-      </div>
-    </div>
-
-
-
-    <div class="record-container">
-      <!-- 기록이 없을 경우 표시될 문구 -->
-
-      <div style="display: none;" class="no-records-message">등록하신 회원이 없습니다.</div>
-
-      <div class="record-item-container" data-id="record-1">
-        <!-- 기록 정보 -->
-        <a v-for="item in records">
-          <div class="record-item">
-            <div class="record-info">
-              <div class="record-image">
-                <div class="circle personal">{{item.pt ? 'PT' : '개인'}}</div>
-              </div>
-              <div class="record-text">
-                <div class="record-title">{{item.recordDate}} ({{item.dayOfWeek}})</div>
-                <div class="record-descript">
-                  <div>{{item.recordOfExerciseTypes.join(', ')}}</div>
-                  <div class="gray-text" v-if="item.usedMuscleNames.length != 0">|
-                    {{item.usedMuscleNames.join(', ')}}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-        <!-- 기록 정보 -->
-      </div>
-    </div>
+    <ExerciseRecord
+        :selectedCategory="selectedCategory"
+        :userId="id"
+        :userType="userType"
+        v-model:records="records">
+    </ExerciseRecord>
+    <Profile :selectedCategory="selectedCategory" :member="member">
+    </Profile>
     <!-- 정렬 모달 -->
     <div id="sortModal" class="record-sort-modal hidden">
       <ul class="sort-options">
@@ -137,13 +58,13 @@
 <script setup lang="ts">
 
 import {useRecordStore} from "~/store/record";
-import {computed} from "vue";
-const recordStore = useRecordStore();
+import ExerciseRecord from "~/components/record/ExerciseRecord.vue";
+import Profile from "~/components/record/Profile.vue";
 
-const subCategory = ref([{key: 'all', name: '전체'},
-                        {key: 'pt', name: 'PT'},
-                        {key: 'personal', name: '개인'}]);
-const selectedSubCategory = ref('all');
+
+const recordStore = useRecordStore();
+const category = ref([{key: 'record', name: '운동기록'}, {key: 'profile', name: '프로필'}]);
+const selectedCategory = ref('record');
 const route = useRoute();
 const id = route.params.id;
 const userType = 'TRAINER';
@@ -156,15 +77,8 @@ onMounted(async () => {
   records.value = response.result.list;
 })
 
-const recordCount = computed(() => {
-  return records.value.length;
-})
-
-const selectSubCategory = async (subCategory) => {
-  selectedSubCategory.value = subCategory;
-  const response = await useRecord().recordList({userId: id, userType: userType, type: subCategory});
-  member.value = response.result.user;
-  records.value = response.result.list;
+const selectCategory = (category) => {
+  selectedCategory.value = category;
 }
 
 

@@ -18,7 +18,7 @@
             <div class="default-back-title">{{member.userName}}</div>
           </div>
         </div>
-        <div class="default-header-item">
+        <div @click="showBottomPopup = true" class="default-header-item">
           <div><img src="@/assets/icons/ellypsis.svg" alt=""></div>
         </div>
       </div>
@@ -51,6 +51,27 @@
       <div class="footer-item active" data-target="회원관리">운동기록</div>
       <div class="footer-item" data-target="마이페이지">마이페이지</div>
     </footer>
+    <!--popup-->
+    <div>
+      <BottomPopup :show="showBottomPopup" @close="showBottomPopup = false">
+        <div>
+          <h3 class="bottom-popup-title">더보기</h3>
+          <ul class="popup-menu">
+            <li @click="onMore" class="popup-item">
+              <img src="@/assets/icons/not-allowed.svg">
+              <span @click="showConfirm = true">회원 연결 해제</span>
+            </li>
+          </ul>
+        </div>
+      </BottomPopup>
+    </div>
+    <ConfirmModal
+        :show="showConfirm"
+        :title="'김지혜 회원님과의 연결을 정말 해제할까요?'"
+        :message="`연결 해제 후 회원의 정보를 열람하거나 기록을 추가할 수 없어요.\n회원은 기존 기록을 계속 열람할 수 있고,\n언제든 다시 연결하면 기존 기록을 확인할 수 있어요.`"
+        @close="showConfirm = false"
+        @confirm="onConfirmDisconnect"
+    />
   </div>
   <button class="add-btn"><img src="@/assets/icons/add (floating button).svg" alt=""></button>
 </template>
@@ -60,14 +81,18 @@
 import {useRecordStore} from "~/store/record";
 import ExerciseRecord from "~/components/record/ExerciseRecord.vue";
 import Profile from "~/components/record/Profile.vue";
-
-
+import BottomPopup from "~/components/popup/BottomPopup.vue";
+import ConfirmModal from "~/components/popup/ConfirmModal.vue";
+const route = useRoute();
 const recordStore = useRecordStore();
+
+
 const category = ref([{key: 'record', name: '운동기록'}, {key: 'profile', name: '프로필'}]);
 const selectedCategory = ref('record');
-const route = useRoute();
 const id = route.params.id;
 const userType = 'TRAINER';
+const showBottomPopup = ref(false);
+const showConfirm = ref(false);
 const records = ref([]);
 const member = ref({});
 

@@ -1,8 +1,7 @@
 <template>
-  <div v-if="show" class="popup-overlay" @click.self="close">
-    <!-- 슬라이드는 여기만 적용 -->
+  <div class="popup-overlay" @click.self="close" v-show="show">
     <transition name="slide-up">
-      <div class="popup-content">
+      <div v-if="show" class="popup-content">
         <slot />
       </div>
     </transition>
@@ -32,6 +31,7 @@ const close = () => {
   z-index: 1000;
 }
 
+/* 팝업 본체 */
 .popup-content {
   background: white;
   width: 100%;
@@ -41,7 +41,7 @@ const close = () => {
   padding: 20px;
 }
 
-/* 팝업 슬라이드 애니메이션 */
+/* 슬라이드 애니메이션 */
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: transform 0.3s ease;

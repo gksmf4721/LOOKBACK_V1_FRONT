@@ -72,6 +72,12 @@
         @close="showConfirm = false"
         @confirm="onConfirmDisconnect"
     />
+    <SingleConfirmModal
+        :show="showSingleConfirm"
+        :title="'회원 연결 해제'"
+        :message="`${member.userName} 회원님과 연결이 해제되었습니다. 수고하셨어요!`"
+        @confirm="onSingleConfirm"
+    />
   </div>
   <button class="add-btn"><img src="@/assets/icons/add (floating button).svg" alt=""></button>
 </template>
@@ -83,7 +89,10 @@ import ExerciseRecord from "~/components/record/ExerciseRecord.vue";
 import Profile from "~/components/record/Profile.vue";
 import BottomPopup from "~/components/popup/BottomPopup.vue";
 import ConfirmModal from "~/components/popup/ConfirmModal.vue";
+import SingleConfirmModal from "~/components/popup/SingleConfirmModal.vue";
+import {useRouter} from "vue-router";
 const route = useRoute();
+const router = useRouter();
 const recordStore = useRecordStore();
 
 
@@ -93,19 +102,47 @@ const id = route.params.id;
 const userType = 'TRAINER';
 const showBottomPopup = ref(false);
 const showConfirm = ref(false);
+const showSingleConfirm = ref(false);
+const singleConfirmMessage = ref('');
 const records = ref([]);
 const member = ref({});
+const trainingId = ref('');
 
 onMounted(async () => {
   const response = await useRecord().recordList({userId: id, userType: userType});
   member.value = response.result.user
   records.value = response.result.list;
+  trainingId.value = response.result.trainingId;
 })
 
 const selectCategory = (category) => {
   selectedCategory.value = category;
 }
 
+const onConfirmDisconnect = async () => {
+
+   try {
+    const response= await useTrainer().cancelTraining({trainingId : trainingId.value});
+    if (response.status == '200') {
+      singleConfirmMessage.value =
+          `${member.value.userName} 회원님과 연결이 해제되었습니다. 수고하셨어요!`;
+      showConfirm.value= false;
+      showBottomPopup.value= false;
+      showSingleConfirm.value = true;
+    } else {
+      singleConfirmMessage.value =
+          `연결 해제에 실패했습니다.`;
+    }
+
+   } catch (e) {
+     singleConfirmMessage.value =
+         `연결 해제에 실패했습니다.`;
+   }
+}
+
+const onSingleConfirm = () => {
+  router.replace("/trainer");
+}
 
 
 </script>

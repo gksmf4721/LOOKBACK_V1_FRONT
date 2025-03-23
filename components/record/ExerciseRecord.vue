@@ -1,8 +1,7 @@
 <template>
   <div>
     <div v-if="selectedCategory == 'record'
-    && records.length == 0
-    && selectedSubCategory == 'ALL'" class="no-records-message">
+    && records.length == 0" class="no-records-message">
       <span>
       등록된 기록이 없습니다.
       </span>

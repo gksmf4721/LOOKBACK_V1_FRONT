@@ -31,7 +31,7 @@
             <input
                 id="start-time"
                 type="time"
-                v-model="startTime"
+                v-model="recordTimeStart"
             />
           </div>
 
@@ -40,7 +40,7 @@
             <input
                 id="end-time"
                 type="time"
-                v-model="endTime"
+                v-model="recordTimeEnd"
             />
           </div>
         </div>
@@ -49,7 +49,7 @@
 
     <!-- 하단 고정 푸터 -->
     <footer class="fixed-footer-btn">
-      <button class="create-record-btn" onclick="window.location.href='page2.html'">
+      <button class="create-record-btn" @click="saveRecord">
         운동 선택
       </button>
     </footer>
@@ -58,20 +58,32 @@
 
 <script setup lang="ts">
   const route = useRoute();
+  const router = useRouter();
   const userId = route.params.id;
 
   const now = new Date()
   const defaultTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
   const defaultTimeAfter1Hour = `${String(now.getHours() + 1).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 
-  const startTime = ref(defaultTime)
-  const endTime = ref(defaultTimeAfter1Hour);
+  const recordTimeStart = ref(defaultTime)
+  const recordTimeEnd = ref(defaultTimeAfter1Hour);
 
   const pad = (n: number) => String(n).padStart(2, '0')
   const toYYYYMMDD = (d: Date) =>
       `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  const recordDate = ref(toYYYYMMDD(now));
 
-  const recordDate = ref(toYYYYMMDD(now))
+
+  const saveRecord = async () => {
+    const response = await useRecord().recordSave(
+        { usersId: userId
+              , recordDate: recordDate.value
+              , recordTimeStart: recordTimeStart.value
+              , recordTimeEnd: recordTimeEnd.value });
+    if(response.status == '200'){
+      router.replace(`/record/${userId}/save/${response.result.recordId}`);
+    }
+  }
 
 </script>
 

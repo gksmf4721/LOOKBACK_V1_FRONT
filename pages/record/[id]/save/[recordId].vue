@@ -1,0 +1,153 @@
+<template>
+  <div class="container">
+    <!-- 상단 타이틀 (검색창 포함) -->
+    <header class="header">
+      <div class="search-header">
+        <div class="back-btn-box">
+          <button class="back-btn"><img src="./icons/chevron-left.svg" alt=""></button>
+        </div>
+        <div class="search-container">
+          <input
+              type="text"
+              class="search-input"
+              placeholder="운동명 검색 / 직접 입력"
+          />
+
+          <button class="search-btn">
+            <img src="./icons/search.svg" alt="">
+          </button>
+        </div>
+      </div>
+    </header>
+    <!-- 카테고리 메뉴 -->
+    <nav class="category-nav">
+      <button class="category-btn active">근력</button>
+      <button class="category-btn">스트레칭</button>
+      <button class="category-btn">유산소</button>
+    </nav>
+
+    <div class="search-filters">
+      <!-- 장비 -->
+      <div class="filter-group">
+        <h3 class="filter-title">장비</h3>
+        <div class="filter-buttons scrollable">
+          <button class="filter-btn active">전체</button>
+          <button class="filter-btn">머신</button>
+          <button class="filter-btn">바벨</button>
+          <button class="filter-btn">덤벨</button>
+          <button class="filter-btn">케틀벨</button>
+          <button class="filter-btn">맨몸</button>
+          <button class="filter-btn">밴드</button>
+        </div>
+      </div>
+
+      <!-- 부위 -->
+      <div class="filter-group">
+        <h3 class="filter-title">부위</h3>
+        <div class="filter-buttons scrollable">
+          <button class="filter-btn active">전체</button>
+          <button class="filter-btn">승모</button>
+          <button class="filter-btn">어깨</button>
+          <button class="filter-btn">가슴</button>
+          <button class="filter-btn">등</button>
+          <button class="filter-btn">팔</button>
+          <button class="filter-btn">허리</button>
+          <button class="filter-btn">복근</button>
+        </div>
+      </div>
+
+      <!-- 근육 -->
+      <div class="filter-group">
+        <h3 class="filter-title">근육</h3>
+        <div class="filter-buttons scrollable">
+          <button class="filter-btn active">전체</button>
+          <button class="filter-btn">삼두근</button>
+          <button class="filter-btn">이두근</button>
+          <button class="filter-btn">전완근</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 정렬 모달 -->
+    <div id="sortModal" class="sort-modal hidden">
+      <ul class="sort-options">
+        <li class="sort-option" data-value="recommend">추천순</li>
+        <li class="sort-option" data-value="newest">최신순</li>
+        <li class="sort-option" data-value="frequent">자주한순</li>
+        <li class="sort-option" data-value="alphabetical">가나다순</li>
+      </ul>
+    </div>
+    <div class="exercise-container">
+      <div class="exercise-item-container" data-id="exercise-1">
+        <!-- 운동 정보 -->
+        <div class="exercise-details-container">
+          <div class="exercise-info">
+            <div class="exercise-image">
+              <img src="./images/1.png" alt="운동 아이콘">
+            </div>
+            <div class="exercise-text">
+              <div class="exercise-title">
+                <div>
+
+                  바벨 스쿼트
+                </div>
+                <img src="./icons/chevron-right.svg" alt="">
+              </div>
+              <div class="exercise-muscles">대퇴사두, 둔근, 햄스트링</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 선택 버튼 -->
+        <button class="exercise-select-btn">선택</button>
+      </div>
+      <div class="exercise-item-container" data-id="exercise-2">
+        <!-- 운동 정보 -->
+        <div class="exercise-details-container">
+          <div class="exercise-info">
+            <div class="exercise-image">
+              <img src="./images/1.png" alt="운동 아이콘">
+            </div>
+            <div class="exercise-text">
+              <div class="exercise-title">
+                <div>
+                  바벨 스쿼트
+                </div>
+                <img src="./icons/chevron-right.svg" alt="">
+              </div>
+              <div class="exercise-muscles-box">
+                <div class="exercise-muscle">
+                  대퇴사두, 둔근, 햄스트링
+                </div>
+                <div class="font-12 gray-text">
+                  &nbsp| 엉덩이
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 선택 버튼 -->
+        <button class="exercise-select-btn">선택</button>
+      </div>
+      <!-- 운동 콘텐츠 모달 -->
+      <div id="exerciseModal" class="exercise-modal">
+        <div class="modal-content">
+          <!-- 여기에 동적으로 추가될 선택된 운동 항목들 -->
+          <div class="modal-items-container"></div>
+          <!-- 저장하기 버튼 -->
+          <button class="save-btn">저장하기</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script setup lang="ts">
+
+</script>
+
+<style scoped>
+
+</style>

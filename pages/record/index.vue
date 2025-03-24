@@ -79,7 +79,7 @@
         @confirm="onSingleConfirm"
     />
   </div>
-  <button class="add-btn"><img src="@/assets/icons/add (floating button).svg" alt=""></button>
+  <button class="add-btn" @click="createRecord"><img src="@/assets/icons/add (floating button).svg" alt=""></button>
 </template>
 
 <script setup lang="ts">
@@ -142,6 +142,10 @@ const onConfirmDisconnect = async () => {
 
 const onSingleConfirm = () => {
   router.replace("/trainer");
+}
+
+const createRecord = () => {
+  router.replace(`/record/${id}`);
 }
 
 

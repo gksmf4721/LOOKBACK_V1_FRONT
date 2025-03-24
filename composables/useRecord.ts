@@ -9,6 +9,14 @@ export const useRecord  = () => {
             console.error("[recordList] 요청실패 : ", e);
         }
     }
+    const recordSave = async (data) => {
+        try {
+            const response = await api().post(`/record/save`,data);
+            return response
+        } catch (e) {
+            console.error("[recordSave] 요청실패 : ", e);
+        }
+    }
 
-    return {recordList}
+    return {recordList, recordSave}
 }

@@ -4,7 +4,7 @@
     <header class="header">
       <div class="search-header">
         <div class="back-btn-box">
-          <button class="back-btn"><img src="./icons/chevron-left.svg" alt=""></button>
+          <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
         </div>
         <div class="search-container">
           <input

@@ -21,9 +21,10 @@
     </header>
     <!-- 카테고리 메뉴 -->
     <nav class="category-nav">
-      <button class="category-btn active">근력</button>
-      <button class="category-btn">스트레칭</button>
-      <button class="category-btn">유산소</button>
+      <button v-for="item in exerciseTypes"
+              @click="selectExerciseType(item.key)"
+              :class="{active:item.key == selectedExerciseType}"
+              class="category-btn">{{item.value}}</button>
     </nav>
 
     <div class="search-filters">
@@ -31,13 +32,10 @@
       <div class="filter-group">
         <h3 class="filter-title">장비</h3>
         <div class="filter-buttons scrollable">
-          <button class="filter-btn active">전체</button>
-          <button class="filter-btn">머신</button>
-          <button class="filter-btn">바벨</button>
-          <button class="filter-btn">덤벨</button>
-          <button class="filter-btn">케틀벨</button>
-          <button class="filter-btn">맨몸</button>
-          <button class="filter-btn">밴드</button>
+          <button v-for="item in equipments"
+                  @click="selectEquipment(item.equipmentId)"
+                  :class="{active : item.equipmentId == selectedEquipment}"
+                  class="filter-btn">{{item.name}}</button>
         </div>
       </div>
 
@@ -45,14 +43,10 @@
       <div class="filter-group">
         <h3 class="filter-title">부위</h3>
         <div class="filter-buttons scrollable">
-          <button class="filter-btn active">전체</button>
-          <button class="filter-btn">승모</button>
-          <button class="filter-btn">어깨</button>
-          <button class="filter-btn">가슴</button>
-          <button class="filter-btn">등</button>
-          <button class="filter-btn">팔</button>
-          <button class="filter-btn">허리</button>
-          <button class="filter-btn">복근</button>
+          <button v-for="item in muscleCategories"
+                  @click="selectMuscleCategory(item.muscleCategoryId)"
+                  :class="{active: item.muscleCategoryId == selectedMuscleCategory}"
+                  class="filter-btn">{{item.muscleName}}</button>
         </div>
       </div>
 
@@ -146,8 +140,58 @@
 
 <script setup lang="ts">
 
+import {useExercise} from "~/composables/useExercise";
+
+const exerciseTypes  = ref([]);
+const strengthExercises = ref([]);
+const cardioExercises = ref([]);
+const stretchingExercises = ref([]);
+const muscleCategories = ref([{muscleCategoryId: 0, muscleName: '전체'}]);
+const equipments = ref([{equipmentId : 0, name: '전체'}]);
+
+const selectedExerciseType = ref('');
+const selectedEquipment = ref(0);
+const selectedMuscleCategory = ref(0);
+const hasChildren = ref(false);
+const selectedMuscleChildren = ref('');
+
+onMounted(async() => {
+  const result = await useExercise().getResponseExercise();
+  exerciseTypes.value = result?.exerciseTypes;
+  strengthExercises.value = result?.strengthExercises;
+  cardioExercises.value = result?.cardioExercises;
+  stretchingExercises.value = result?.stretchingExercises;
+  muscleCategories.value = [muscleCategories.value[0], ...result?.muscleCategories];
+  equipments.value = [equipments.value[0], ...result?.equipments];
+
+  selectedExerciseType.value = result?.exerciseTypes[0].key;
+})
+
+const exerciseList = computed(() => {
+  return strengthExercises;
+})
+
+/*selected*/
+const selectExerciseType = (data) => {
+  selectedExerciseType.value = data;
+}
+const selectEquipment = (data) => {
+  selectedEquipment.value = data;
+}
+const selectMuscleCategory = (data) => {
+  selectedMuscleCategory.value = data;
+}
+const haveChildren = () => {
+  hasChildren.value = true;
+}
+const noChildren = () => {
+  hasChildren.value = false;
+}
+const selectMuscleChildren = (data) => {
+  selectedMuscleChildren.value = data;
+}
+
 </script>
 
 <style scoped>
-
 </style>

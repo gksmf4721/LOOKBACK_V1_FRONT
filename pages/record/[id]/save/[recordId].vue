@@ -72,51 +72,23 @@
       </ul>
     </div>
     <div class="exercise-container">
-      <div class="exercise-item-container" data-id="exercise-1">
+      <div v-for="item in exerciseList"  class="exercise-item-container" data-id="exercise-1">
         <!-- 운동 정보 -->
         <div class="exercise-details-container">
           <div class="exercise-info">
             <div class="exercise-image">
-              <img src="./images/1.png" alt="운동 아이콘">
+              <img :src="item.imageUrl" alt="운동 아이콘">
             </div>
             <div class="exercise-text">
               <div class="exercise-title">
-                <div>
-
-                  바벨 스쿼트
-                </div>
-                <img src="./icons/chevron-right.svg" alt="">
+                <div>{{item.exerciseName}}</div>
+                <img src="@/assets/icons/chevron-right.svg" alt="">
               </div>
-              <div class="exercise-muscles">대퇴사두, 둔근, 햄스트링</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 선택 버튼 -->
-        <button class="exercise-select-btn">선택</button>
-      </div>
-      <div class="exercise-item-container" data-id="exercise-2">
-        <!-- 운동 정보 -->
-        <div class="exercise-details-container">
-          <div class="exercise-info">
-            <div class="exercise-image">
-              <img src="./images/1.png" alt="운동 아이콘">
-            </div>
-            <div class="exercise-text">
-              <div class="exercise-title">
-                <div>
-                  바벨 스쿼트
-                </div>
-                <img src="./icons/chevron-right.svg" alt="">
-              </div>
-              <div class="exercise-muscles-box">
-                <div class="exercise-muscle">
-                  대퇴사두, 둔근, 햄스트링
-                </div>
-                <div class="font-12 gray-text">
-                  &nbsp| 엉덩이
-                </div>
-              </div>
+              <div class="exercise-muscles">
+                {{item.muscleGroup[0]?.muscleCategory?.muscleName ?
+                  item.muscleGroup[0]?.muscleCategory?.muscleName + ' |' :
+                ''}}
+                {{item.muscleGroup[1]?.muscleCategory?.muscleName}}</div>
             </div>
           </div>
         </div>
@@ -168,7 +140,7 @@ onMounted(async() => {
 })
 
 const exerciseList = computed(() => {
-  return strengthExercises;
+  return cardioExercises.value;
 })
 
 /*selected*/

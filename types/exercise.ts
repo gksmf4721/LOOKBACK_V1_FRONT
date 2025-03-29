@@ -8,7 +8,8 @@ export interface Exercise {
     exerciseName: string;
     exerciseLevel: number;
     caloriesBurned: number;
-    description: string
+    description: string;
+    imageUrl: string;
     muscleGroup?: MuscleGroup[];
     equipmentCategory: Equipment;
 }

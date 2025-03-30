@@ -23,18 +23,18 @@
     <nav class="category-nav">
       <button v-for="item in exerciseTypes"
               @click="selectExerciseType(item.key)"
-              :class="{active:item.key == selectedExerciseType}"
+              :class="{active:item.key == selected.exerciseType}"
               class="category-btn">{{item.value}}</button>
     </nav>
 
-    <div class="search-filters">
+    <div v-if="selected.exerciseType === 'STRENGTH'" class="search-filters">
       <!-- 장비 -->
       <div class="filter-group">
         <h3 class="filter-title">장비</h3>
         <div class="filter-buttons scrollable">
           <button v-for="item in equipments"
                   @click="selectEquipment(item.equipmentId)"
-                  :class="{active : item.equipmentId == selectedEquipment}"
+                  :class="{active : item.equipmentId == selected.equipment}"
                   class="filter-btn">{{item.name}}</button>
         </div>
       </div>
@@ -45,19 +45,19 @@
         <div class="filter-buttons scrollable">
           <button v-for="item in muscleCategories"
                   @click="selectMuscleCategory(item.muscleCategoryId)"
-                  :class="{active: item.muscleCategoryId == selectedMuscleCategory}"
+                  :class="{active: item.muscleCategoryId == selected.muscleCategory}"
                   class="filter-btn">{{item.muscleName}}</button>
         </div>
       </div>
 
       <!-- 근육 -->
-      <div class="filter-group">
+      <div v-if="muscleCategoryChildren.length > 1" class="filter-group">
         <h3 class="filter-title">근육</h3>
         <div class="filter-buttons scrollable">
-          <button class="filter-btn active">전체</button>
-          <button class="filter-btn">삼두근</button>
-          <button class="filter-btn">이두근</button>
-          <button class="filter-btn">전완근</button>
+          <button v-for="item in muscleCategoryChildren"
+                  @click="selected.muscleChildren = item.muscleCategoryId"
+                  :class="{active : selected.muscleChildren == item.muscleCategoryId}"
+                  class="filter-btn">{{item.muscleName}}</button>
         </div>
       </div>
     </div>
@@ -77,7 +77,11 @@
         <div class="exercise-details-container">
           <div class="exercise-info">
             <div class="exercise-image">
-              <img :src="item.imageUrl" alt="운동 아이콘">
+              <img
+                  :src="item.imageUrl"
+                  @error="(e) => commonStore.handleImageError('@/assets/images/1.png', e)"
+                  alt="운동 아이콘"
+              />
             </div>
             <div class="exercise-text">
               <div class="exercise-title">
@@ -113,6 +117,9 @@
 <script setup lang="ts">
 
 import {useExercise} from "~/composables/useExercise";
+import {useCommonStore} from "~/store/common";
+const commonStore = useCommonStore();
+
 
 const exerciseTypes  = ref([]);
 const strengthExercises = ref([]);
@@ -120,12 +127,16 @@ const cardioExercises = ref([]);
 const stretchingExercises = ref([]);
 const muscleCategories = ref([{muscleCategoryId: 0, muscleName: '전체'}]);
 const equipments = ref([{equipmentId : 0, name: '전체'}]);
+const exercises = ref([]);
+const muscleCategoryChildren = ref([{muscleCategoryId : 0, muscleName: '전체'}]);
 
-const selectedExerciseType = ref('');
-const selectedEquipment = ref(0);
-const selectedMuscleCategory = ref(0);
+const selected = ref({
+  exerciseType: '',
+  equipment: 0,
+  muscleCategory: 0,
+  muscleChildren: 0
+});
 const hasChildren = ref(false);
-const selectedMuscleChildren = ref('');
 
 onMounted(async() => {
   const result = await useExercise().getResponseExercise();
@@ -136,22 +147,80 @@ onMounted(async() => {
   muscleCategories.value = [muscleCategories.value[0], ...result?.muscleCategories];
   equipments.value = [equipments.value[0], ...result?.equipments];
 
-  selectedExerciseType.value = result?.exerciseTypes[0].key;
+  selected.value.exerciseType = result?.exerciseTypes[0].key;
+
+  //첫 운동 리스트는 근력이며 카테고리는 전체
+  exercises.value = result?.strengthExercises;
 })
 
 const exerciseList = computed(() => {
-  return cardioExercises.value;
+  let filterList = [];
+  let filter = selected.value;
+  let exerciseType     = filter.exerciseType;
+  let equipmentId      = filter.equipment;
+  let muscleCategoryId = filter.muscleCategory;
+
+  // 유산소
+  if (exerciseType == 'CARDIO') {return cardioExercises.value}
+  // 스트레칭
+  if (exerciseType == 'STRETCHING') {return stretchingExercises.value}
+  // 근력
+  if (exerciseType == 'STRENGTH') {
+    let isStrengthFilter = equipmentId == 0 && muscleCategoryId == 0;
+
+    if (isStrengthFilter) {return strengthExercises.value;}
+    strengthExercises.value.forEach((exercise) => {
+      //장비
+      let isEquipment = equipmentId == 0;
+      if(!isEquipment) {
+        isEquipment = exercise.equipmentCategory?.equipmentId == equipmentId
+      }
+      //부위
+      let isMuscleCategory = muscleCategoryId == 0;
+      if(!isMuscleCategory) {
+        isMuscleCategory = exercise.muscleGroup?.some((group) => {
+          const category = group.muscleCategory;
+          return category.muscleCategoryId == muscleCategoryId
+              || category.parentsId == muscleCategoryId;
+        })
+      }
+
+      if (isEquipment && isMuscleCategory) {
+        filterList.push(exercise);
+      }
+    })
+  }
+
+
+  return filterList;
 })
+
 
 /*selected*/
 const selectExerciseType = (data) => {
-  selectedExerciseType.value = data;
+  selected.value.exerciseType = data;
+  if (data == 'STRENGTH') {exercises.value = strengthExercises.value}
+  if (data == 'CARDIO') {exercises.value = cardioExercises.value}
+  if (data == 'STRETCHING') {exercises.value = stretchingExercises.value}
 }
 const selectEquipment = (data) => {
-  selectedEquipment.value = data;
+
+  selected.value.equipment = data;
 }
 const selectMuscleCategory = (data) => {
-  selectedMuscleCategory.value = data;
+  let childrenList = [];
+  muscleCategories.value.forEach((muscle) => {
+    let isParent = muscle.parentId === data
+    if (isParent) {
+      childrenList.push(muscle);
+    }
+  })
+  muscleCategoryChildren.value = [muscleCategoryChildren.value[0], ...childrenList];
+
+  selected.value.muscleCategory = data;
+}
+const selectMuscleChildren = (data) => {
+  selected.value.muscleChildren.ata;
 }
 const haveChildren = () => {
   hasChildren.value = true;
@@ -159,9 +228,7 @@ const haveChildren = () => {
 const noChildren = () => {
   hasChildren.value = false;
 }
-const selectMuscleChildren = (data) => {
-  selectedMuscleChildren.value = data;
-}
+
 
 </script>
 

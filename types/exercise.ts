@@ -12,6 +12,7 @@ export interface Exercise {
     imageUrl: string;
     muscleGroup?: MuscleGroup[];
     equipmentCategory: Equipment;
+    isChecked: boolean;
 }
 
 export interface ExerciseTypes {

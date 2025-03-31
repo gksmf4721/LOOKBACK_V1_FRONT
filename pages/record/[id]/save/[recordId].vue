@@ -50,8 +50,8 @@
         </div>
       </div>
 
-      <!-- 근육 -->
-      <div v-if="muscleCategoryChildren.length > 1" class="filter-group">
+      <!-- 근육 mvp이후 추가-->
+<!-- <div v-if="muscleCategoryChildren.length > 1" class="filter-group">
         <h3 class="filter-title">근육</h3>
         <div class="filter-buttons scrollable">
           <button v-for="item in muscleCategoryChildren"
@@ -59,7 +59,7 @@
                   :class="{active : selected.muscleChildren == item.muscleCategoryId}"
                   class="filter-btn">{{item.muscleName}}</button>
         </div>
-      </div>
+      </div>-->
     </div>
 
     <!-- 정렬 모달 -->
@@ -96,15 +96,25 @@
             </div>
           </div>
         </div>
-
         <!-- 선택 버튼 -->
-        <button class="exercise-select-btn">선택</button>
+        <button @click="selectExerciseRecord(item)"
+                type="button"
+                :class="{selected: item.isChecked}"
+                class="exercise-select-btn">선택</button>
       </div>
       <!-- 운동 콘텐츠 모달 -->
-      <div id="exerciseModal" class="exercise-modal">
+      <div :class="{show : selectedExerciseRecords.length > 0}" class="exercise-modal">
         <div class="modal-content">
           <!-- 여기에 동적으로 추가될 선택된 운동 항목들 -->
-          <div class="modal-items-container"></div>
+          <div class="modal-items-container">
+            <div v-for="item in selectedExerciseRecords" class="modal-item" data-id="exercise-1">
+              <div class="modal-image-container">
+                <img src="http://127.0.0.1:5500/images/1.png" alt="바벨 스쿼트">
+                <button @click="removeSelectExerciseRecord(item)" class="close-btn" data-id="exercise-1">×</button>
+              </div>
+              <div class="item-text">{{ item.exerciseName }}</div>
+            </div>
+          </div>
           <!-- 저장하기 버튼 -->
           <button class="save-btn">저장하기</button>
         </div>
@@ -118,8 +128,11 @@
 
 import {useExercise} from "~/composables/useExercise";
 import {useCommonStore} from "~/store/common";
+import type {ExerciseRecord} from "~/types/exerciseRecord";
+import type {Exercise} from "~/types/exercise";
+const route = useRoute();
+const recordId = route.params.recordId;
 const commonStore = useCommonStore();
-
 
 const exerciseTypes  = ref([]);
 const strengthExercises = ref([]);
@@ -136,7 +149,9 @@ const selected = ref({
   muscleCategory: 0,
   muscleChildren: 0
 });
-const hasChildren = ref(false);
+
+//선택한 운동 목록
+const selectedExerciseRecords = ref<ExerciseRecord>([]);
 
 onMounted(async() => {
   const result = await useExercise().getResponseExercise();
@@ -155,42 +170,60 @@ onMounted(async() => {
 
 const exerciseList = computed(() => {
   let filterList = [];
-  let filter = selected.value;
-  let exerciseType     = filter.exerciseType;
-  let equipmentId      = filter.equipment;
-  let muscleCategoryId = filter.muscleCategory;
-
+  let select = selected.value;
+  let exerciseType     = select.exerciseType;
+  let equipmentId      = select.equipment;
+  let muscleCategoryId = select.muscleCategory;
+  let selectedEr = selectedExerciseRecords.value;
+  //let muscleChildren   = select.muscleChildren; 3뎁스 이후 추가
   // 유산소
-  if (exerciseType == 'CARDIO') {return cardioExercises.value}
+  if (exerciseType == 'CARDIO') {
+    filterList =  cardioExercises.value
+  }
   // 스트레칭
-  if (exerciseType == 'STRETCHING') {return stretchingExercises.value}
+  if (exerciseType == 'STRETCHING') {
+    filterList = stretchingExercises.value
+  }
   // 근력
   if (exerciseType == 'STRENGTH') {
-    let isStrengthFilter = equipmentId == 0 && muscleCategoryId == 0;
+    let isStrengthFilter = equipmentId == 0 && muscleCategoryId == 0
 
-    if (isStrengthFilter) {return strengthExercises.value;}
-    strengthExercises.value.forEach((exercise) => {
-      //장비
-      let isEquipment = equipmentId == 0;
-      if(!isEquipment) {
-        isEquipment = exercise.equipmentCategory?.equipmentId == equipmentId
-      }
-      //부위
-      let isMuscleCategory = muscleCategoryId == 0;
-      if(!isMuscleCategory) {
-        isMuscleCategory = exercise.muscleGroup?.some((group) => {
-          const category = group.muscleCategory;
-          return category.muscleCategoryId == muscleCategoryId
-              || category.parentsId == muscleCategoryId;
-        })
-      }
+    if (isStrengthFilter) {
+      filterList = strengthExercises.value;
+    } else {
+      strengthExercises.value.forEach((exercise) => {
+        //장비
+        let isEquipment = equipmentId == 0;
+        if(!isEquipment) {
+          isEquipment = exercise.equipmentCategory?.equipmentId == equipmentId
+        }
+        //부위
+        let isMuscleCategory = muscleCategoryId == 0;
+        if(!isMuscleCategory) {
+          isMuscleCategory = exercise.muscleGroup?.some((group) => {
+            const category = group.muscleCategory;
 
-      if (isEquipment && isMuscleCategory) {
-        filterList.push(exercise);
-      }
-    })
+            return category.muscleCategoryId == muscleCategoryId
+                || category.parentsId == muscleCategoryId
+          })
+
+        }
+        if (isEquipment && isMuscleCategory) {
+          filterList.push(exercise);
+        }
+      })
+    }
   }
 
+  filterList.forEach((item) => {
+    item.isChecked = false;
+    for (const er of selectedEr) {
+      if (item.exerciseId === er.exerciseId) {
+        item.isChecked = true;
+        break; // 이미 찾았으면 더 볼 필요 없음!
+      }
+    }
+  })
 
   return filterList;
 })
@@ -219,15 +252,41 @@ const selectMuscleCategory = (data) => {
 
   selected.value.muscleCategory = data;
 }
-const selectMuscleChildren = (data) => {
-  selected.value.muscleChildren.ata;
+
+const selectExerciseRecord = (exercise : Exercise) => {
+
+  const findIndex = selectedExerciseRecords.value.findIndex(
+      item => item.exerciseId === exercise.exerciseId
+  );
+
+  let updated = [...selectedExerciseRecords.value];
+  if (findIndex > -1) {
+    updated.splice(findIndex,1);
+  } else {
+    updated.push({
+      exerciseId: exercise.exerciseId
+      , recordId
+      , imageUrl: exercise.imageUrl
+      , exerciseName: exercise.exerciseName});
+  }
+    selectedExerciseRecords.value = updated;
 }
-const haveChildren = () => {
-  hasChildren.value = true;
+
+const removeSelectExerciseRecord = (exercise : Exercise) => {
+  const findIndex = selectedExerciseRecords.value.findIndex(
+      item => item.exerciseId === exercise.exerciseId
+  );
+  let updated = [...selectedExerciseRecords.value];
+  updated.splice(findIndex,1);
+  selectedExerciseRecords.value = updated;
 }
-const noChildren = () => {
-  hasChildren.value = false;
-}
+
+/*const selectMuscleChildren = (data) => {
+  selected.value.muscleChildren = data;
+}*/
+
+
+
 
 
 </script>

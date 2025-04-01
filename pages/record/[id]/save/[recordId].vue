@@ -8,6 +8,8 @@
         </div>
         <div class="search-container">
           <input
+              :value="searchValue"
+              @input="onInput"
               type="text"
               class="search-input"
               placeholder="운동명 검색 / 직접 입력"
@@ -109,7 +111,7 @@
           <div class="modal-items-container">
             <div v-for="item in selectedExerciseRecords" class="modal-item" data-id="exercise-1">
               <div class="modal-image-container">
-                <img src="http://127.0.0.1:5500/images/1.png" alt="바벨 스쿼트">
+                <img :src="item.imageUrl" alt="바벨 스쿼트">
                 <button @click="removeSelectExerciseRecord(item)" class="close-btn" data-id="exercise-1">×</button>
               </div>
               <div class="item-text">{{ item.exerciseName }}</div>
@@ -130,6 +132,7 @@ import {useExercise} from "~/composables/useExercise";
 import {useCommonStore} from "~/store/common";
 import type {ExerciseRecord} from "~/types/exerciseRecord";
 import type {Exercise} from "~/types/exercise";
+import {debounce} from "@antfu/utils";
 const route = useRoute();
 const recordId = route.params.recordId;
 const commonStore = useCommonStore();
@@ -142,7 +145,7 @@ const muscleCategories = ref([{muscleCategoryId: 0, muscleName: '전체'}]);
 const equipments = ref([{equipmentId : 0, name: '전체'}]);
 const exercises = ref([]);
 const muscleCategoryChildren = ref([{muscleCategoryId : 0, muscleName: '전체'}]);
-
+const searchValue = ref("");
 const selected = ref({
   exerciseType: '',
   equipment: 0,
@@ -169,6 +172,7 @@ onMounted(async() => {
 })
 
 const exerciseList = computed(() => {
+  let searchText = searchValue.value;
   let filterList = [];
   let select = selected.value;
   let exerciseType     = select.exerciseType;
@@ -213,6 +217,13 @@ const exerciseList = computed(() => {
         }
       })
     }
+
+  }
+  if (searchText != "") {
+    console.log(searchText);
+    filterList = filterList.filter((item) => {
+      return item.exerciseName.includes(searchText);
+    })
   }
 
   filterList.forEach((item) => {
@@ -228,7 +239,10 @@ const exerciseList = computed(() => {
   return filterList;
 })
 
-
+//검색어 바로 반응을 위함
+const onInput = (e: Event) => {
+  searchValue.value = (e.target as HTMLInputElement).value;
+}
 /*selected*/
 const selectExerciseType = (data) => {
   selected.value.exerciseType = data;

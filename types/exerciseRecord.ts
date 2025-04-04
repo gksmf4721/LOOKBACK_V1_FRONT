@@ -1,3 +1,4 @@
+import type {ExerciseRecordDetail} from "~/types/exerciseRecordDetail";
 
 export interface ExerciseRecord {
     exerciseRecordId: number;
@@ -11,4 +12,6 @@ export interface ExerciseRecord {
     ord: number;
     imageUrl: string;
     exerciseName: string;
+    exerciseRecordDetail: ExerciseRecordDetail[];
 }
+

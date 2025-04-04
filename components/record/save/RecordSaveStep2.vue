@@ -36,43 +36,57 @@
         <ExerciseRecordCard
             :title="item.exerciseName"
             v-for="item in selectedExerciseRecords">
+          <!--근력-->
           <div v-if="item.exerciseType == 'STRENGTH'">
-            <div class="set-list" id="set-list-1">
+            <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
               <div class="set-row">
-                <span>set 1</span>
+                <span>set {{detail.ord}}</span>
                 <input type="number" placeholder="kg" /> x <input type="number" placeholder="횟수" />
+                <button @click="removeSets(item,detail)"
+                        v-if="detail.ord != 1"
+                        class="delete-btn"
+                >x 삭제</button>
               </div>
             </div>
-            <button class="add-set-btn add-set-btn-2">+ 세트 추가</button>
+            <button @click="addSets(item)"
+                    class="add-set-btn add-set-btn-2">+ 세트 추가</button>
           </div>
+          <!--스트레칭-->
           <div v-if="item.exerciseType == 'STRETCHING'">
-            <div class="set-list" id="set-list-2">
+            <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
               <div class="set-row">
-                <span>set 1</span>
+                <span>set {{detail.ord}}</span>
                 <input type="number" placeholder="횟수" />
+                <button @click="removeSets(item,detail)"
+                        v-if="detail.ord != 1"
+                        class="delete-btn"
+                >x 삭제</button>
               </div>
             </div>
-            <button class="add-set-btn add-set-btn-2">+ 세트 추가</button>
+            <button @click="addSets(item)"
+                    class="add-set-btn add-set-btn-2"
+            >+ 세트 추가</button>
           </div>
+          <!--유산소-->
           <div v-if="item.exerciseType == 'CARDIO'">
-            <div class="set-list" id="set-list-3">
-              <div class="set-row">
-                <span>시간</span>
-                <input type="number" placeholder="분" />
-              </div>
-              <div class="set-row">
-                <span>거리</span>
-                <input type="number" placeholder="km" />
-              </div>
+            <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
+            <div class="set-row">
+                <span>{{ExerciseDetailTypeLabel[detail.type]}}</span>
+                <input type="number" :placeholder="ExerciseDetailTypeUnit[detail.type]" />
+                <button v-if="detail.ord != 1"
+                        @click="addCardioSets(item, detail.type)"
+                        class="delete-btn">x 삭제</button>
             </div>
-            <div class="add-set-btns">
-              <button class="add-set-btn-small" data-running="speed">속도</button>
-              <button class="add-set-btn-small"
-                      data-running="slop">경사</button>
-              <button class="add-set-btn-small"
-                      data-running="heart">심박수</button>
-              <button class="add-set-btn-small"
-                      data-running="kcal">칼로리</button>
+            </div>
+            <div class="add-set-btns"
+                 :class="{ 'five-buttons': filteredCardioDetailBtn.length - (item.exerciseRecordDetail.length-1)  >= 5 }">
+              <template v-for="type in filteredCardioDetailBtn">
+                <button @click="addCardioSets(item, type)"
+                        v-if="!item.exerciseRecordDetail.some(detail => detail.type === type)"
+                        class="add-set-btn-small2"
+                        data-running="speed"
+                >{{ExerciseDetailTypeLabel[type]}}</button>
+              </template>
             </div>
           </div>
         </ExerciseRecordCard>
@@ -91,8 +105,14 @@
 
 <script setup lang="ts">
 
-import {number} from "vscode-jsonrpc/lib/common/is";
 import ExerciseRecordCard from "~/components/record/save/ExerciseRecordCard.vue";
+import type {ExerciseRecord} from "~/types/exerciseRecord";
+import {
+  ExerciseDetailTypes,
+  ExerciseDetailTypeLabel,
+  ExerciseDetailTypeUnit,
+  type ExerciseRecordDetail
+} from "~/types/exerciseRecordDetail";
 
 const props = defineProps({
   selectedExerciseRecords: {
@@ -105,9 +125,31 @@ const props = defineProps({
   }
 })
 
+const excludeExerciseTypeBtn = ['STRENGTH', 'CARDIO', 'TIME'];
+
+const filteredCardioDetailBtn = Object.values(ExerciseDetailTypes).filter(
+    (type) => !excludeExerciseTypeBtn.includes(type)
+)
+
 const emits = defineEmits([
     'onMove',
+    'addSets',
+    'removeSets',
+    'addCardioSets'
 ])
+
+const addSets = (exerciseRecord : ExerciseRecord) => {
+  emits('addSets', exerciseRecord);
+}
+
+const removeSets = (exerciseRecord : ExerciseRecord, exerciseRecordDetail : ExerciseRecordDetail) => {
+  emits('removeSets', exerciseRecord, exerciseRecordDetail);
+}
+
+const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : ExerciseDetailTypes) => {
+  emits('addCardioSets', exerciseRecord, exerciseDetailType);
+}
+
 </script>
 
 <style scoped>

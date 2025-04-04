@@ -16,7 +16,7 @@
           />
 
           <button class="search-btn">
-            <img src="./icons/search.svg" alt="">
+            <img src="@/assets/icons/search.svg" alt="">
           </button>
         </div>
       </div>

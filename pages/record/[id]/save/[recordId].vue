@@ -24,6 +24,9 @@
         :step="step"
         :selectedExerciseRecords="selectedExerciseRecords"
 
+        @addCardioSets="addCardioSets"
+        @removeSets="removeSets"
+        @addSets="addSets"
         @onMove="onMove">
     </RecordSaveStep2>
   </div>
@@ -33,6 +36,8 @@
 import {useExercise} from "~/composables/useExercise";
 import type {ExerciseRecord} from "~/types/exerciseRecord";
 import type {Exercise} from "~/types/exercise";
+import {ExerciseDetailTypes, type ExerciseRecordDetail} from "~/types/exerciseRecordDetail";
+import {exercise} from "~/store/exercise";
 const route = useRoute();
 const recordId = route.params.recordId;
 
@@ -142,8 +147,8 @@ const exerciseList = computed(() => {
 })
 
 //검색어 바로 반응을 위함
-const onInput = (e: Event) => {
-  searchValue.value = (e.target as HTMLInputElement).value;
+const onInput = (data: string) => {
+  searchValue.value = data;
 }
 /*selected*/
 const selectExerciseType = (data) => {
@@ -176,12 +181,16 @@ const selectExerciseRecord = (exercise : Exercise) => {
   );
 
   let updated = [...selectedExerciseRecords.value];
+  let reOrderDetails = [];
   if (findIndex > -1) {
     updated.splice(findIndex,1);
+    reOrderDetails = reOrderExerciseRecord(updated);
   } else {
-    updated.push(exercise);
+    updated.push({...exercise, ord: selectedExerciseRecords.value.length + 1});
+    reOrderDetails = [...updated];
+
   }
-    selectedExerciseRecords.value = updated;
+    selectedExerciseRecords.value = reOrderDetails;
 }
 
 /*function*/
@@ -191,11 +200,116 @@ const removeSelectExerciseRecord = (exercise : Exercise) => {
   );
   let updated = [...selectedExerciseRecords.value];
   updated.splice(findIndex,1);
-  selectedExerciseRecords.value = updated;
+  const reOrderDetails = reOrderExerciseRecord(updated);
+  selectedExerciseRecords.value = reOrderDetails;
+}
+
+const reOrderExerciseRecord = (updated: ExerciseRecord[]) => {
+  return updated.map((detail, idx) => ({
+    ...detail,
+    ord: idx + 1
+  }))
 }
 
 const onMove = (data) => {
+  for (let i = 0; i < selectedExerciseRecords.value.length; i++) {
+    let er = selectedExerciseRecords.value[i];
+    let recordDetails = er.exerciseRecordDetail;
+        if(recordDetails == null) {
+          recordDetails = generateExerciseRecordDetail(er.exerciseType);
+        }
+    selectedExerciseRecords.value[i].exerciseRecordDetail = recordDetails;
+  }
   step.value = data;
+}
+
+const generateExerciseRecordDetail = (type : Exercise.exerciseType) => {
+
+  switch (type) {
+    case 'STRENGTH' :   // 근력 기본 3세트
+    case 'STRETCHING' : // 스트레칭 기본 3세트
+      return addExerciseRecordDetail(3,type);
+    case 'CARDIO' :     // 유산소는 기본 시간, 거리
+      return [
+          {ord: 1, type: 'TIME'},
+          {ord: 2, type: 'DISTANCE'}
+      ];
+    default:
+      return [];
+  }
+}
+
+const addExerciseRecordDetail = (set: number, type : ExerciseRecordDetail.type) => {
+  let recordDetails = [];
+  for (let j = 1; j < set + 1; j++) {
+    let exerciseRecordDetail = {
+      ord: j, type: type
+    }
+    recordDetails.push(exerciseRecordDetail);
+  }
+  return recordDetails;
+}
+
+const addSets = (exerciseRecord : ExerciseRecord) => {
+  const target = selectedExerciseRecords.value;
+  const findIndex = target.findIndex(
+      (er) => er.ord == exerciseRecord.ord
+  );
+  selectedExerciseRecords.value[findIndex].exerciseRecordDetail =
+      [...selectedExerciseRecords.value[findIndex].exerciseRecordDetail
+        ,{ord: selectedExerciseRecords.value[findIndex].exerciseRecordDetail.length + 1, type: 'STRENGTH'}];
+
+}
+
+const removeSets = (exerciseRecord : ExerciseRecord, exerciseRecordDetail : ExerciseRecordDetail) => {
+  const findIndex = selectedExerciseRecords.value.findIndex(
+      (er) => er.ord == exerciseRecord.ord
+  );
+  if(findIndex === -1) return;
+
+  const findErDetailIndex = selectedExerciseRecords.value[findIndex].exerciseRecordDetail.findIndex(
+      (erd) => erd.ord == exerciseRecordDetail.ord
+  )
+  if(findIndex === -1) return;
+
+  const target = selectedExerciseRecords.value[findIndex];
+  let updated = [...target.exerciseRecordDetail];
+  updated.splice(findErDetailIndex,1);
+
+  const reOrderDetails = updated.map((detail, idx) => ({
+    ...detail,
+    ord: idx + 1
+  }))
+
+  selectedExerciseRecords.value[findIndex].exerciseRecordDetail = reOrderDetails;
+
+}
+
+const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : ExerciseDetailTypes) => {
+  const findIndex = selectedExerciseRecords.value.findIndex(
+      (er) => er.ord == exerciseRecord.ord
+  );
+  if(findIndex === -1) return;
+
+  const target = selectedExerciseRecords.value[findIndex]
+  const findErDetailIndex = target.exerciseRecordDetail.findIndex(
+      (erd) => erd.type == exerciseDetailType
+  )
+
+  let updated = target.exerciseRecordDetail;
+  let reOrderDetails;
+  if (findErDetailIndex > -1) {
+    updated.splice(findErDetailIndex,1);
+    reOrderDetails = updated.map((detail, idx) => ({
+      ...detail,
+      ord: idx + 1
+    }))
+  } else {
+    updated.push({...updated, ord: updated.length + 1, type: exerciseDetailType});
+    reOrderDetails = updated;
+  }
+
+  selectedExerciseRecords.value[findIndex].exerciseRecordDetail = reOrderDetails;
 }
 
 /*const selectMuscleChildren = (data) => {

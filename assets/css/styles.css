@@ -2079,23 +2079,32 @@ input::placeholder {
   margin-bottom: 20px;
 }
 
-.add-set-btns{
+.add-set-btns {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  border: none;
+  margin-bottom: 20px;
 }
 
-.record-details .add-set-btn-small {
-  display: block;
-  width: 24%;
-  padding: 8px;
+/* 버튼이 5개 이상일 때 조정 */
+.add-set-btn-small2 {
   background-color: #fff;
   color: #000;
   border: 0.5px solid #000;
   border-radius: 8px;
   font-size: 14px;
+  width: 18%;
+  padding: 8px;
+  flex: 1 1 calc(25% - 8px); /* 기본 4칸 기준 */
+  max-width: calc(25% - 8px);
   text-align: center;
-  cursor: pointer;
-  margin-bottom: 20px;
+  white-space: nowrap;
+}
+.add-set-btns.five-buttons .add-set-btn-small2 {
+  flex: 1 1 calc(20% - 8px);
+  max-width: calc(20% - 8px);
 }
 
 .record-details .media-section {

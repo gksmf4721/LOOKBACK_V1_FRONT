@@ -3252,3 +3252,16 @@ textarea:focus::placeholder {
 .set-list{
   margin-top: 20px;
 }
+
+.media-section .media-label {
+  width: 60px;
+  height: 60px;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}

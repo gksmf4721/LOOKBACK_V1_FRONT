@@ -1,17 +1,16 @@
 import type {ExerciseRecordDetail} from "~/types/exerciseRecordDetail";
+import type {UploadFile} from "~/types/file";
 
 export interface ExerciseRecord {
     exerciseRecordId: number;
     recordId: number;
     exerciseId: number;
-    sets: number;
-    repsPerSet: number;
-    weight: number;
     duration: string;
     memo: string;
     ord: number;
     imageUrl: string;
     exerciseName: string;
     exerciseRecordDetail: ExerciseRecordDetail[];
+    uploadFiles: UploadFile[];
 }
 

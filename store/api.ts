@@ -45,9 +45,9 @@ export const api = defineStore("api", () => {
     };
 
     // ✅ POST 요청 함수
-    const post = async (url: string, data?: object) => {
+    const post = async (url: string, data?: object, config = {}) => {
         try {
-            const response = await api.post(url, data);
+            const response = await api.post(url, data, config);
             return response.data;
         } catch (error) {
             console.error("❌ POST 요청 실패:", error);

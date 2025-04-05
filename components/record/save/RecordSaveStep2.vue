@@ -34,14 +34,25 @@
       <div class="scroll-section">
         <!-- 운동 하나-->
         <ExerciseRecordCard
+            v-for="item in selectedExerciseRecords"
+            v-model:memo="item.memo"
             :title="item.exerciseName"
-            v-for="item in selectedExerciseRecords">
+            :ord="item.ord"
+
+            @uploadFile="uploadFile"
+        >
           <!--근력-->
           <div v-if="item.exerciseType == 'STRENGTH'">
             <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
               <div class="set-row">
                 <span>set {{detail.ord}}</span>
-                <input type="number" placeholder="kg" /> x <input type="number" placeholder="횟수" />
+                <input v-model="detail.weight"
+                       type="number"
+                       placeholder="kg"
+                /> x
+                <input v-model="detail.repsPerSet"
+                       type="number" placeholder="횟수"
+                />
                 <button @click="removeSets(item,detail)"
                         v-if="detail.ord != 1"
                         class="delete-btn"
@@ -56,7 +67,9 @@
             <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
               <div class="set-row">
                 <span>set {{detail.ord}}</span>
-                <input type="number" placeholder="횟수" />
+                <input v-model="detail.repsPerSet"
+                       type="number"
+                       placeholder="횟수" />
                 <button @click="removeSets(item,detail)"
                         v-if="detail.ord != 1"
                         class="delete-btn"
@@ -72,7 +85,9 @@
             <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
             <div class="set-row">
                 <span>{{ExerciseDetailTypeLabel[detail.type]}}</span>
-                <input type="number" :placeholder="ExerciseDetailTypeUnit[detail.type]" />
+                <input v-model="detail.repsPerSet"
+                       type="number"
+                       :placeholder="ExerciseDetailTypeUnit[detail.type]" />
                 <button v-if="detail.ord != 1"
                         @click="addCardioSets(item, detail.type)"
                         class="delete-btn">x 삭제</button>
@@ -135,7 +150,8 @@ const emits = defineEmits([
     'onMove',
     'addSets',
     'removeSets',
-    'addCardioSets'
+    'addCardioSets',
+    'uploadFile'
 ])
 
 const addSets = (exerciseRecord : ExerciseRecord) => {
@@ -148,6 +164,10 @@ const removeSets = (exerciseRecord : ExerciseRecord, exerciseRecordDetail : Exer
 
 const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : ExerciseDetailTypes) => {
   emits('addCardioSets', exerciseRecord, exerciseDetailType);
+}
+
+const uploadFile = (e: Event, ord: number) => {
+  emits('uploadFile', e, ord);
 }
 
 </script>

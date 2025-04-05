@@ -24,6 +24,7 @@
         :step="step"
         :selectedExerciseRecords="selectedExerciseRecords"
 
+        @uploadFile="uploadFile"
         @addCardioSets="addCardioSets"
         @removeSets="removeSets"
         @addSets="addSets"
@@ -38,7 +39,10 @@ import type {ExerciseRecord} from "~/types/exerciseRecord";
 import type {Exercise} from "~/types/exercise";
 import {ExerciseDetailTypes, type ExerciseRecordDetail} from "~/types/exerciseRecordDetail";
 import {exercise} from "~/store/exercise";
+import {FileType} from "~/types/file";
+import {useFileStore} from "~/store/file";
 const route = useRoute();
+const fileStore = useFileStore();
 const recordId = route.params.recordId;
 
 const step : number = ref(1);
@@ -184,7 +188,7 @@ const selectExerciseRecord = (exercise : Exercise) => {
   let reOrderDetails = [];
   if (findIndex > -1) {
     updated.splice(findIndex,1);
-    reOrderDetails = reOrderExerciseRecord(updated);
+    reOrderDetails = reOrder(updated);
   } else {
     updated.push({...exercise, ord: selectedExerciseRecords.value.length + 1});
     reOrderDetails = [...updated];
@@ -200,15 +204,8 @@ const removeSelectExerciseRecord = (exercise : Exercise) => {
   );
   let updated = [...selectedExerciseRecords.value];
   updated.splice(findIndex,1);
-  const reOrderDetails = reOrderExerciseRecord(updated);
+  const reOrderDetails = reOrder(updated);
   selectedExerciseRecords.value = reOrderDetails;
-}
-
-const reOrderExerciseRecord = (updated: ExerciseRecord[]) => {
-  return updated.map((detail, idx) => ({
-    ...detail,
-    ord: idx + 1
-  }))
 }
 
 const onMove = (data) => {
@@ -312,9 +309,33 @@ const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : Exe
   selectedExerciseRecords.value[findIndex].exerciseRecordDetail = reOrderDetails;
 }
 
+const uploadFile = async (e: Event, ord : number) => {
+  const uploadedFile = await fileStore.uploadFile(e, FileType.EXERCISE_RECORD);
+  const target = selectedExerciseRecords.value;
+  const findIndex = target.findIndex(
+      (er) => er.ord === ord
+  );
+
+  let _uploadFiles =target[findIndex].uploadFiles
+  if(!_uploadFiles) {
+    _uploadFiles = []
+  }
+  _uploadFiles.push({...uploadedFile, ord: _uploadFiles.length + 1});
+
+  selectedExerciseRecords.value[findIndex].uploadFiles
+    = _uploadFiles
+}
+
 /*const selectMuscleChildren = (data) => {
   selected.value.muscleChildren = data;
 }*/
+
+const reOrder = (updated: Array) => {
+  return updated.map((detail, idx) => ({
+    ...detail,
+    ord: idx + 1
+  }))
+}
 
 </script>
 

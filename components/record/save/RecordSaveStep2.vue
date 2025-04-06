@@ -43,7 +43,7 @@
         >
           <!--근력-->
           <div v-if="item.exerciseType == 'STRENGTH'">
-            <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
+            <div v-for="detail in item.exerciseRecordDetails" class="set-list" id="set-list-1">
               <div class="set-row">
                 <span>set {{detail.ord}}</span>
                 <input v-model="detail.weight"
@@ -59,12 +59,12 @@
                 >x 삭제</button>
               </div>
             </div>
-            <button @click="addSets(item)"
+            <button @click="addSets(item,ExerciseDetailTypes.STRENGTH)"
                     class="add-set-btn add-set-btn-2">+ 세트 추가</button>
           </div>
           <!--스트레칭-->
           <div v-if="item.exerciseType == 'STRETCHING'">
-            <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
+            <div v-for="detail in item.exerciseRecordDetails" class="set-list" id="set-list-1">
               <div class="set-row">
                 <span>set {{detail.ord}}</span>
                 <input v-model="detail.repsPerSet"
@@ -76,13 +76,13 @@
                 >x 삭제</button>
               </div>
             </div>
-            <button @click="addSets(item)"
+            <button @click="addSets(item, ExerciseDetailTypes.STRETCHING)"
                     class="add-set-btn add-set-btn-2"
             >+ 세트 추가</button>
           </div>
           <!--유산소-->
           <div v-if="item.exerciseType == 'CARDIO'">
-            <div v-for="detail in item.exerciseRecordDetail" class="set-list" id="set-list-1">
+            <div v-for="detail in item.exerciseRecordDetails" class="set-list" id="set-list-1">
             <div class="set-row">
                 <span>{{ExerciseDetailTypeLabel[detail.type]}}</span>
                 <input v-model="detail.repsPerSet"
@@ -94,10 +94,10 @@
             </div>
             </div>
             <div class="add-set-btns"
-                 :class="{ 'five-buttons': filteredCardioDetailBtn.length - (item.exerciseRecordDetail.length-1)  >= 5 }">
+                 :class="{ 'five-buttons': filteredCardioDetailBtn.length - (item.exerciseRecordDetails.length-1)  >= 5 }">
               <template v-for="type in filteredCardioDetailBtn">
                 <button @click="addCardioSets(item, type)"
-                        v-if="!item.exerciseRecordDetail.some(detail => detail.type === type)"
+                        v-if="!item.exerciseRecordDetails.some(detail => detail.type === type)"
                         class="add-set-btn-small2"
                         data-running="speed"
                 >{{ExerciseDetailTypeLabel[type]}}</button>
@@ -111,7 +111,9 @@
 
     <!-- 하단 고정 푸터 -->
     <footer class="fixed-footer-btn">
-      <button class="create-record-btn" onclick="window.location.href='page2.html'">
+      <button @click="submit"
+              class="create-record-btn"
+              type="button">
         저장
       </button>
     </footer>
@@ -151,11 +153,12 @@ const emits = defineEmits([
     'addSets',
     'removeSets',
     'addCardioSets',
-    'uploadFile'
+    'uploadFile',
+    'submit'
 ])
 
-const addSets = (exerciseRecord : ExerciseRecord) => {
-  emits('addSets', exerciseRecord);
+const addSets = (exerciseRecord : ExerciseRecord, type: ExerciseDetailTypes) => {
+  emits('addSets', exerciseRecord, type);
 }
 
 const removeSets = (exerciseRecord : ExerciseRecord, exerciseRecordDetail : ExerciseRecordDetail) => {
@@ -168,6 +171,10 @@ const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : Exe
 
 const uploadFile = (e: Event, ord: number) => {
   emits('uploadFile', e, ord);
+}
+
+const submit = () =>{
+  emits('submit');
 }
 
 </script>

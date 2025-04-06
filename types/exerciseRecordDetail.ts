@@ -11,6 +11,7 @@ export interface ExerciseRecordDetail {
 
 export enum ExerciseDetailTypes {
     STRENGTH = 'STRENGTH',
+    STRETCHING = 'STRETCHING',
     CARDIO = 'CARDIO',
     TIME = 'TIME',
     SPEED = 'SPEED',

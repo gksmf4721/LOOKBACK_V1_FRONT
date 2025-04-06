@@ -28,7 +28,8 @@
         @addCardioSets="addCardioSets"
         @removeSets="removeSets"
         @addSets="addSets"
-        @onMove="onMove">
+        @onMove="onMove"
+        @submit="submit">
     </RecordSaveStep2>
   </div>
 </template>
@@ -41,6 +42,7 @@ import {ExerciseDetailTypes, type ExerciseRecordDetail} from "~/types/exerciseRe
 import {exercise} from "~/store/exercise";
 import {FileType} from "~/types/file";
 import {useFileStore} from "~/store/file";
+import {api} from "~/store/api";
 const route = useRoute();
 const fileStore = useFileStore();
 const recordId = route.params.recordId;
@@ -211,11 +213,11 @@ const removeSelectExerciseRecord = (exercise : Exercise) => {
 const onMove = (data) => {
   for (let i = 0; i < selectedExerciseRecords.value.length; i++) {
     let er = selectedExerciseRecords.value[i];
-    let recordDetails = er.exerciseRecordDetail;
+    let recordDetails = er.exerciseRecordDetails;
         if(recordDetails == null) {
           recordDetails = generateExerciseRecordDetail(er.exerciseType);
         }
-    selectedExerciseRecords.value[i].exerciseRecordDetail = recordDetails;
+    selectedExerciseRecords.value[i].exerciseRecordDetails = recordDetails;
   }
   step.value = data;
 }
@@ -247,14 +249,14 @@ const addExerciseRecordDetail = (set: number, type : ExerciseRecordDetail.type) 
   return recordDetails;
 }
 
-const addSets = (exerciseRecord : ExerciseRecord) => {
+const addSets = (exerciseRecord : ExerciseRecord, type: ExerciseDetailTypese) => {
   const target = selectedExerciseRecords.value;
   const findIndex = target.findIndex(
       (er) => er.ord == exerciseRecord.ord
   );
-  selectedExerciseRecords.value[findIndex].exerciseRecordDetail =
-      [...selectedExerciseRecords.value[findIndex].exerciseRecordDetail
-        ,{ord: selectedExerciseRecords.value[findIndex].exerciseRecordDetail.length + 1, type: 'STRENGTH'}];
+  selectedExerciseRecords.value[findIndex].exerciseRecordDetails =
+      [...selectedExerciseRecords.value[findIndex].exerciseRecordDetails
+        ,{ord: selectedExerciseRecords.value[findIndex].exerciseRecordDetails.length + 1, type: type}];
 
 }
 
@@ -264,13 +266,13 @@ const removeSets = (exerciseRecord : ExerciseRecord, exerciseRecordDetail : Exer
   );
   if(findIndex === -1) return;
 
-  const findErDetailIndex = selectedExerciseRecords.value[findIndex].exerciseRecordDetail.findIndex(
+  const findErDetailIndex = selectedExerciseRecords.value[findIndex].exerciseRecordDetails.findIndex(
       (erd) => erd.ord == exerciseRecordDetail.ord
   )
   if(findIndex === -1) return;
 
   const target = selectedExerciseRecords.value[findIndex];
-  let updated = [...target.exerciseRecordDetail];
+  let updated = [...target.exerciseRecordDetails];
   updated.splice(findErDetailIndex,1);
 
   const reOrderDetails = updated.map((detail, idx) => ({
@@ -278,7 +280,7 @@ const removeSets = (exerciseRecord : ExerciseRecord, exerciseRecordDetail : Exer
     ord: idx + 1
   }))
 
-  selectedExerciseRecords.value[findIndex].exerciseRecordDetail = reOrderDetails;
+  selectedExerciseRecords.value[findIndex].exerciseRecordDetails = reOrderDetails;
 
 }
 
@@ -289,11 +291,11 @@ const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : Exe
   if(findIndex === -1) return;
 
   const target = selectedExerciseRecords.value[findIndex]
-  const findErDetailIndex = target.exerciseRecordDetail.findIndex(
+  const findErDetailIndex = target.exerciseRecordDetails.findIndex(
       (erd) => erd.type == exerciseDetailType
   )
 
-  let updated = target.exerciseRecordDetail;
+  let updated = target.exerciseRecordDetails;
   let reOrderDetails;
   if (findErDetailIndex > -1) {
     updated.splice(findErDetailIndex,1);
@@ -306,7 +308,7 @@ const addCardioSets = (exerciseRecord : ExerciseRecord, exerciseDetailType : Exe
     reOrderDetails = updated;
   }
 
-  selectedExerciseRecords.value[findIndex].exerciseRecordDetail = reOrderDetails;
+  selectedExerciseRecords.value[findIndex].exerciseRecordDetails = reOrderDetails;
 }
 
 const uploadFile = async (e: Event, ord : number) => {
@@ -324,6 +326,15 @@ const uploadFile = async (e: Event, ord : number) => {
 
   selectedExerciseRecords.value[findIndex].uploadFiles
     = _uploadFiles
+}
+
+//저장
+const submit = async () => {
+  console.log('ddd');
+  const response = await useRecord().recordDetailSave({
+        "recordId": recordId,
+        "exerciseRecords": selectedExerciseRecords.value
+  });
 }
 
 /*const selectMuscleChildren = (data) => {

@@ -9,6 +9,7 @@ export const useRecord  = () => {
             console.error("[recordList] 요청실패 : ", e);
         }
     }
+
     const recordSave = async (data) => {
         try {
             const response = await api().post(`/record/save`,data);
@@ -18,5 +19,15 @@ export const useRecord  = () => {
         }
     }
 
-    return {recordList, recordSave}
+    const recordDetailSave = async (data) => {
+        try {
+            const response = await api().post(`/record/detail/save`,data);
+            return response
+        } catch (e) {
+            console.error("[recordDetailSave] 요청실패 : ", e);
+        }
+    }
+
+
+    return {recordList, recordSave, recordDetailSave}
 }

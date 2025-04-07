@@ -27,6 +27,7 @@
         @uploadFile="uploadFile"
         @addCardioSets="addCardioSets"
         @removeSets="removeSets"
+        @removeFile="removeFile"
         @addSets="addSets"
         @onMove="onMove"
         @submit="submit">
@@ -337,9 +338,33 @@ const submit = async () => {
   });
 }
 
-/*const selectMuscleChildren = (data) => {
-  selected.value.muscleChildren = data;
-}*/
+const removeFile = (uuid : string, exerciseRecordOrd :number) => {
+  const findIndex = selectedExerciseRecords.value.findIndex(
+      (er) => er.ord == exerciseRecordOrd
+  );
+
+  const target = selectedExerciseRecords.value[findIndex];
+  const fileIndex = target.uploadFiles.findIndex(
+      (file) => file.uuid == uuid
+  );
+
+  //해당 uuid는 upload 파일에서 삭제
+  target.uploadFiles.splice(fileIndex,1);
+
+  //정렬 후 저장
+  const reOrderUploadFiles = reOrder(target.uploadFiles);
+  selectedExerciseRecords.value[findIndex].uploadFiles = reOrderUploadFiles
+
+
+  //삭제 파일 넣기
+  let _delFiles =target.delFiles
+  if(!_delFiles) {
+    _delFiles = []
+  }
+  _delFiles.push({uuid : uuid});
+
+  selectedExerciseRecords.value[findIndex].delFiles = _delFiles;
+}
 
 const reOrder = (updated: Array) => {
   return updated.map((detail, idx) => ({

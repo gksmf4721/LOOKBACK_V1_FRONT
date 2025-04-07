@@ -38,7 +38,9 @@
             v-model:memo="item.memo"
             :title="item.exerciseName"
             :ord="item.ord"
+            :uploadFiles="item.uploadFiles"
 
+            @removeFile="removeFile"
             @uploadFile="uploadFile"
         >
           <!--근력-->
@@ -154,7 +156,8 @@ const emits = defineEmits([
     'removeSets',
     'addCardioSets',
     'uploadFile',
-    'submit'
+    'submit',
+    'removeFile'
 ])
 
 const addSets = (exerciseRecord : ExerciseRecord, type: ExerciseDetailTypes) => {
@@ -175,6 +178,10 @@ const uploadFile = (e: Event, ord: number) => {
 
 const submit = () =>{
   emits('submit');
+}
+
+const removeFile = (uuid : string, exerciseRecordOrd : number) => {
+  emits('removeFile', uuid, exerciseRecordOrd);
 }
 
 </script>

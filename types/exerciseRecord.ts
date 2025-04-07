@@ -12,5 +12,6 @@ export interface ExerciseRecord {
     exerciseName: string;
     exerciseRecordDetails: ExerciseRecordDetail[];
     uploadFiles: UploadFile[];
+    delFiles: UploadFile[];
 }
 

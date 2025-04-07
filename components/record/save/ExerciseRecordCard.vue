@@ -18,9 +18,24 @@
       <div class="media-section">
         <label>사진/영상</label>
         <div class="media-content">
-          <div class="media-box">
-            <img src="@/assets/images/1.png" alt="이미지" />
-            <button class="delete-btn">x</button>
+          <div class="media-box" v-for="item in uploadFiles">
+            <div class="media-box" v-if="isVideoFile(item.relativePath)">
+              <!-- 동영상 미리보기 -->
+              <video
+                  :src="`http://localhost:8080${item.relativePath}`"
+                  controls
+                  width="200"
+                  height="auto"
+              ></video>
+              <button @click="removeFile(item.uuid, ord)"
+                      class="delete-btn">x</button>
+            </div>
+            <div class="media-box" v-else>
+              <!-- 이미지 미리보기 -->
+              <img :src="`http://localhost:8080${item.relativePath}`" alt="이미지" />
+              <button @click="removeFile(item.uuid, ord)"
+                      class="delete-btn">x</button>
+            </div>
           </div>
           <!-- 파일 업로드 버튼 -->
           <label class="media-label">
@@ -63,6 +78,10 @@ const props = defineProps({
   ord: {
     type: Number,
     default: 0
+  },
+  uploadFiles: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -70,7 +89,8 @@ const isOpen = ref(false);
 
 const emits = defineEmits([
   'update:memo',
-  'uploadFile'
+  'uploadFile',
+  'removeFile'
 ])
 
 const updateMemo = (e: Event) => {
@@ -82,6 +102,24 @@ const updateMemo = (e: Event) => {
 const handleFileUpload = async (e: Event) => {
   emits('uploadFile', e, props.ord);
 }
+
+const removeFile = (uuid : string, exerciseRecordOrd : number) => {
+  debugger;
+  emits('removeFile', uuid, exerciseRecordOrd);
+}
+
+// 예: 간단히 확장자로 동영상 여부 판단
+function isVideoFile(path: string): boolean {
+  const lowerPath = path.toLowerCase()
+  return (
+      lowerPath.endsWith(".mp4") ||
+      lowerPath.endsWith(".mov") ||
+      lowerPath.endsWith(".avi") ||
+      // 필요 확장자 추가
+      false
+  )
+}
+
 
 </script>
 

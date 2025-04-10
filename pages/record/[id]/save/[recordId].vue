@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+
     <RecordSaveStep1 v-if="step == 1"
       :exerciseTypes="exerciseTypes"
       :selected="selected"
@@ -10,6 +11,8 @@
       :muscleCategories="muscleCategories"
       :exerciseList="exerciseList"
 
+      @moveBack="()=>{  router.replace(`/record/${userId}`);
+    }"
       @updateSearchValue="onInput"
       @selectExerciseType="selectExerciseType"
       @selectEquipment="selectEquipment"
@@ -30,8 +33,14 @@
         @removeFile="removeFile"
         @addSets="addSets"
         @onMove="onMove"
-        @submit="submit">
-    </RecordSaveStep2>
+        @submit="submit"
+    ></RecordSaveStep2>
+    <RecordSaveStep3
+        v-if="step == 3"
+        v-model:selectedExerciseRecords="selectedExerciseRecords"
+
+        @onMove="onMove"
+    ></RecordSaveStep3>
   </div>
 </template>
 
@@ -44,9 +53,12 @@ import {exercise} from "~/store/exercise";
 import {FileType} from "~/types/file";
 import {useFileStore} from "~/store/file";
 import {api} from "~/store/api";
+import {useRouter} from "vue-router";
 const route = useRoute();
+const router = useRouter();
 const fileStore = useFileStore();
 const recordId = route.params.recordId;
+const userId = route.params.id;
 
 const step : number = ref(1);
 //props데이터
@@ -336,6 +348,8 @@ const submit = async () => {
         "recordId": recordId,
         "exerciseRecords": selectedExerciseRecords.value
   });
+
+  router.replace(`/record/${userId}`);
 }
 
 const removeFile = (uuid : string, exerciseRecordOrd :number) => {
@@ -376,4 +390,28 @@ const reOrder = (updated: Array) => {
 </script>
 
 <style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.4s ease;
+  position: absolute;
+  width: 100%;
+}
+
+.slide-fade-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-fade-enter-to {
+  transform: translateX(0%);
+  opacity: 1;
+}
+
+.slide-fade-leave-from {
+  transform: translateX(0%);
+  opacity: 1;
+}
+.slide-fade-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
 </style>

@@ -3272,3 +3272,41 @@ textarea:focus::placeholder {
   flex-shrink: 0;
   margin: 0;
 }
+
+.record-details-ord {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  touch-action: none; /* 터치 이동 방지 */
+}
+
+.details-header-ord {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.details-title-ord {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.drag-handle-ord {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  cursor: grab;
+}
+
+.drag-handle-ord svg {
+  fill: #333;
+  width: 20px;
+  height: 20px;
+}

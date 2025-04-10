@@ -26,8 +26,14 @@
         <div style="display: flex; justify-content: space-between;">
           <span>7개</span>
           <span class="exercise-pagination" id="exercise-pagination">
-                  <button type="button" class="default-none-btn">순서편집</button> |
-                  <button type="button" class="default-none-btn">운동추가</button>
+                  <button type="button"
+                          class="default-none-btn"
+                          @click="() => emits('onMove', 3)"
+                  >순서편집</button> |
+                  <button type="button"
+                          class="default-none-btn"
+                          @click="() => emits('onMove', 1)"
+                  >운동추가</button>
                 </span>
         </div>
       </label>

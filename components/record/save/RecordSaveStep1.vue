@@ -4,12 +4,12 @@
     <header class="header">
       <div class="search-header">
         <div class="back-btn-box">
-          <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+          <button @click="emits('moveBack')" class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
         </div>
         <div class="search-container">
           <input
               :value="searchValue"
-              @input="(e) => emit('updateSearchValue',e.target.value)"
+              @input="(e) => emits('updateSearchValue',e.target.value)"
               type="text"
               class="search-input"
               placeholder="운동명 검색 / 직접 입력"
@@ -24,7 +24,7 @@
     <!-- 카테고리 메뉴 -->
     <nav class="category-nav">
       <button v-for="item in exerciseTypes"
-              @click="() => emit('selectExerciseType', item.key)"
+              @click="() => emits('selectExerciseType', item.key)"
               :class="{active:item.key == selected.exerciseType}"
               class="category-btn">{{item.value}}</button>
     </nav>
@@ -35,7 +35,7 @@
         <h3 class="filter-title">장비</h3>
         <div class="filter-buttons scrollable">
           <button v-for="item in equipments"
-                  @click="() => emit('selectEquipment',item.equipmentId)"
+                  @click="() => emits('selectEquipment',item.equipmentId)"
                   :class="{active : item.equipmentId == selected.equipment}"
                   class="filter-btn">{{item.name}}</button>
         </div>
@@ -46,7 +46,7 @@
         <h3 class="filter-title">부위</h3>
         <div class="filter-buttons scrollable">
           <button v-for="item in muscleCategories"
-                  @click="() => emit('selectMuscleCategory', item.muscleCategoryId)"
+                  @click="() => emits('selectMuscleCategory', item.muscleCategoryId)"
                   :class="{active: item.muscleCategoryId == selected.muscleCategory}"
                   class="filter-btn">{{item.muscleName}}</button>
         </div>
@@ -99,7 +99,7 @@
           </div>
         </div>
         <!-- 선택 버튼 -->
-        <button @click="()=> emit('selectExerciseRecord', item)"
+        <button @click="()=> emits('selectExerciseRecord', item)"
                 type="button"
                 :class="{selected: item.isChecked}"
                 class="exercise-select-btn">선택</button>
@@ -112,13 +112,13 @@
             <div v-for="item in selectedExerciseRecords" class="modal-item" data-id="exercise-1">
               <div class="modal-image-container">
                 <img :src="item.imageUrl" alt="바벨 스쿼트">
-                <button @click="() => emit('removeSelectExerciseRecord',item)" class="close-btn" data-id="exercise-1">×</button>
+                <button @click="() => emits('removeSelectExerciseRecord',item)" class="close-btn" data-id="exercise-1">×</button>
               </div>
               <div class="item-text">{{ item.exerciseName }}</div>
             </div>
           </div>
           <!-- 저장하기 버튼 -->
-          <button class="save-btn" @click="() => emit('onMove', 2)">저장하기</button>
+          <button class="save-btn" @click="() => emits('onMove', 2)">저장하기</button>
         </div>
       </div>
     </div>
@@ -161,7 +161,7 @@
      },
 
    })
-   const emit = defineEmits([
+   const emits = defineEmits([
      'updateSearchValue',          // 사용자가 검색창 입력 변경
      'selectExerciseType',         // 운동 타입 탭 변경
      'selectEquipment',            // 장비 선택
@@ -169,7 +169,8 @@
      'selectExerciseRecord',       // 운동 항목 선택/해제
      'removeSelectExerciseRecord', // 운동 항목 제거
      'save',                       // '저장하기' 버튼 클릭
-     'onMove'
+     'onMove',
+     'moveBack'
    ])
 
 </script>

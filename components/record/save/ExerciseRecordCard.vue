@@ -104,7 +104,6 @@ const handleFileUpload = async (e: Event) => {
 }
 
 const removeFile = (uuid : string, exerciseRecordOrd : number) => {
-  debugger;
   emits('removeFile', uuid, exerciseRecordOrd);
 }
 

@@ -1,0 +1,165 @@
+<template>
+
+  <div class="container">
+    <!-- 다른사람이 작성한 기록일 때 -->
+    <header class="default-header" style="display: none;">
+      <div class="default-div">
+        <div>
+          <div class="back-btn-box-text">
+            <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            <div class="default-back-title">1월 10일 (금)</div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- 자신이 작성한 기록일 떄 -->
+    <header class="default-header">
+      <div class="default-div">
+        <div>
+          <div class="back-btn-box-text">
+            <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            <div class="default-back-title">1월 10일 (금)</div>
+          </div>
+        </div>
+        <div class="default-header-item">
+          <div><img src="@/assets/icons/ellypsis.svg" alt=""></div>
+        </div>
+      </div>
+    </header>
+    <!-- 첫 번째 네모박스 -->
+    <div class="record-detail-title">
+      <div class="title-image">
+        <img src="./images/userProfile.jpeg" alt="사용자 이미지">
+      </div>
+      <div class="title-descript">
+        <p class="detail-title gray-text"> &nbsp; | </p>
+        <p class="detail-title">&nbsp; 이영훈 트레이너 PT <span class="gray-text"> 수업 기록 | 오후 3:00 ~ 3:50 </span></p>
+      </div>
+    </div>
+
+    <!-- 운동 상세 기록 -->
+    <section class="exercise-records">
+      <!-- 기록 하나 -->
+      <div class="exercise-record">
+        <div class="record-header">
+          <span class="record-title">레그익스텐션</span>
+          <button class="record-modal-btn">
+            <img src="@/assets/icons/chevron-right.svg" alt="">
+          </button>
+        </div>
+        <div class="record-header-descript">
+          <div>허벅지</div>
+          <div class="gray-text">&nbsp; |&nbsp;종아리</div>
+        </div>
+        <div class="record-sets">
+          <div class="set">
+            <span class="gray-text-ae gap-text">SET1</span>
+            <div class="set-detail">
+              50kg x 10회
+            </div>
+          </div>
+          <div class="set">
+            <span class="gray-text-ae gap-text">SET1</span>
+            <div class="set-detail">
+              50kg x 10회
+            </div>
+          </div>
+          <div class="set">
+            <span class="gray-text-ae gap-text">SET1</span>
+            <div class="set-detail">
+              50kg x 10회
+            </div>
+          </div>
+          <div class="record-sets-feedback">
+            <span class="record-sets-feedback-title font-12">사진/영상</span>
+            <div class="record-image">
+              <div class="record-image-item">
+                <img src="./images/1.png" alt="운동 아이콘">
+              </div>
+              <div class="record-image-item">
+                <img src="./images/1.png" alt="운동 아이콘">
+              </div>
+            </div>
+          </div>
+          <div class="record-sets-feedback">
+            <span class="record-sets-feedback-title font-12">트레이너 피드백</span>
+            <div class="record-sets-feedback-command font-14">
+              상체 세우고 진행해주세요
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--기록 하나-->
+      <!-- 기록 하나 -->
+      <div class="exercise-record">
+        <div class="record-header">
+          <span class="record-title">러닝머신</span>
+          <button class="record-modal-btn">
+            <img src="@/assets/icons/chevron-right.svg" alt="">
+          </button>
+        </div>
+        <div class="record-header-descript">
+          <div>허벅지</div>
+          <div class="gray-text"> &nbsp; | 유산소</div>
+        </div>
+        <div class="record-sets">
+          <div class="set">
+            <span class="gray-text-ae gap-text">거리</span>
+            <div class="set-detail">
+              3.5km
+            </div>
+          </div>
+          <div class="set">
+            <span class="gray-text-ae gap-text">평균속도</span>
+            <div class="set-detail">
+              6
+            </div>
+          </div>
+          <div class="set">
+            <span class="gray-text-ae gap-text">칼로리</span>
+            <div class="set-detail">
+              210kcal
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--기록 하나-->
+
+    </section>
+    <div id="more-popup" class="detail-popup detail-hidden">
+      <div class="detail-popup-content">
+        <div class="detail-popup-title detail-bold">더보기</div>
+        <div class="detail-popup-item">
+          <span class="detail-popup-icon">✏️</span> 운동기록 편집
+        </div>
+        <div class="detail-popup-item">
+          <span class="detail-popup-icon">🗑️</span> 운동기록 삭제
+        </div>
+        <div class="detail-popup-item">
+          <span class="detail-popup-icon">📋</span> 운동기록 복사
+        </div>
+        <div class="detail-popup-item">
+          <span class="detail-popup-icon">➕</span> 새로운 루틴으로 등록
+        </div>
+      </div>
+    </div>
+    <div id="delete-popup" class="delete-popup hidden">
+      <div class="delete-popup-content">
+        <p class="delete-popup-title">이 운동기록을 삭제할까요?</p>
+        <div class="delete-popup-actions">
+          <button id="cancel-btn" class="delete-popup-btn cancel-btn">취소</button>
+          <button id="confirm-delete-btn" class="delete-popup-btn delete-btn">삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+const route = useRoute();
+const recordId = route.params.recordId;
+</script>
+
+<style scoped>
+
+</style>

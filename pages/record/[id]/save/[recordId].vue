@@ -41,6 +41,10 @@
 
         @onMove="onMove"
     ></RecordSaveStep3>
+    <RecordShare v-if="step == 4"
+                 :userId="userId"
+    >
+    </RecordShare>
   </div>
 </template>
 
@@ -54,8 +58,12 @@ import {FileType} from "~/types/file";
 import {useFileStore} from "~/store/file";
 import {api} from "~/store/api";
 import {useRouter} from "vue-router";
+import {useToast} from "vue-toastification";
+import ConfirmModal from "~/components/popup/ConfirmModal.vue";
+import RecordShare from "~/components/record/save/RecordShare.vue";
 const route = useRoute();
 const router = useRouter();
+
 const fileStore = useFileStore();
 const recordId = route.params.recordId;
 const userId = route.params.id;
@@ -95,6 +103,8 @@ onMounted(async() => {
 
   //첫 운동 리스트는 근력이며 카테고리는 전체
   exercises.value = result?.strengthExercises;
+
+  //TODO 트레이너인 경우 유저가져오기
 })
 
 const exerciseList = computed(() => {
@@ -343,13 +353,17 @@ const uploadFile = async (e: Event, ord : number) => {
 
 //저장
 const submit = async () => {
-  console.log('ddd');
   const response = await useRecord().recordDetailSave({
         "recordId": recordId,
         "exerciseRecords": selectedExerciseRecords.value
   });
 
-  router.replace(`/record/${userId}`);
+  //TODO 회원, 트레이너 다름
+  debugger;
+  if(response.status == 200) {
+    step.value = 4;
+
+  }
 }
 
 const removeFile = (uuid : string, exerciseRecordOrd :number) => {

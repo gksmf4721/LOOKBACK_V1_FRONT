@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     port: 3000, // 포트 번호 고정
     host: '0.0.0.0' // 외부 접근 허용 (필요 시 설정)
   },
-  css: ['@/assets/css/styles.css'],
+  css: ['@/assets/css/styles.css',
+        '@/assets/css/toast.css'],
   app: {
     head: {
       title: '회원님, 운동하셔야죠.',

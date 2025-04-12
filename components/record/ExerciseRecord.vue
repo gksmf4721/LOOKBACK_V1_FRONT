@@ -37,7 +37,8 @@
 
       <div class="record-item-container" data-id="record-1">
         <!-- 기록 정보 -->
-        <a v-for="item in records">
+        <template v-for="item in records">
+        <a @click="moveDetail(item.recordId)">
           <div class="record-item">
             <div class="record-info">
               <div class="record-image">
@@ -54,6 +55,7 @@
             </div>
           </div>
         </a>
+        </template>
         <!-- 기록 정보 -->
       </div>
     </div>
@@ -80,13 +82,20 @@ const recordCount = computed(() => {
   return props.records.length;
 })
 
-const emit = defineEmits(['update:records', 'update:selectedSubCategory']);
+const emits = defineEmits([
+    'update:records',
+    'update:selectedSubCategory',
+    'moveDetail'
+]);
 const selectSubCategory = async (subCategory) => {
   selectedSubCategory.value = subCategory;
   const response = await useRecord().recordList({userId: props.userId, userType: props.userType, type: subCategory});
-  emit('update:records', response.result.list);
+  emits('update:records', response.result.list);
 }
 
+const moveDetail = (recordId: number)=> {
+  emits('moveDetail', recordId);
+}
 
 </script>
 

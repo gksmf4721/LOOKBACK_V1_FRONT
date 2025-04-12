@@ -35,7 +35,10 @@
         :selectedCategory="selectedCategory"
         :userId="id"
         :userType="userType"
-        v-model:records="records">
+        v-model:records="records"
+
+        @moveDetail="moveDetail"
+    >
     </ExerciseRecord>
     <Profile :selectedCategory="selectedCategory" :member="member">
     </Profile>
@@ -148,6 +151,12 @@ const createRecord = () => {
   router.replace(`/record/${id}/create`);
 }
 
+const moveDetail = (recordId: number) => {
+  router.replace({
+    path: `/record/${id}/detail/info`,
+    query: {recordId: recordId}
+  })
+}
 
 </script>
 

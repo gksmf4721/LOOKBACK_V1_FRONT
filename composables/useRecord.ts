@@ -28,6 +28,15 @@ export const useRecord  = () => {
         }
     }
 
+    const recordWithDetail = async (data) => {
+        try {
+            const response = await api().get(`/record/detail`, data)
+            return response;
+        } catch (e) {
+            console.error("[recordWithDetails] 요청실패 : ", e);
+        }
+    }
 
-    return {recordList, recordSave, recordDetailSave}
+
+    return {recordList, recordSave, recordDetailSave, recordWithDetail}
 }

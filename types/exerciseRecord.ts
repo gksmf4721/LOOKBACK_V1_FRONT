@@ -10,6 +10,8 @@ export interface ExerciseRecord {
     ord: number;
     imageUrl: string;
     exerciseName: string;
+    agonistMuscleName: string;
+    synergistMuscleName: string;
     exerciseRecordDetails: ExerciseRecordDetail[];
     uploadFiles: UploadFile[];
     delFiles: UploadFile[];

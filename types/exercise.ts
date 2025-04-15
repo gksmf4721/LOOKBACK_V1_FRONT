@@ -4,7 +4,7 @@ import type {MuscleCategory} from "~/types/muscleCategory";
 
 export interface Exercise {
     exerciseId: number;
-    exerciseType: 'STRENGTH' | 'CARDIO' | 'STRETCHING';
+    exerciseType: ExerciseType;
     exerciseName: string;
     exerciseLevel: number;
     caloriesBurned: number;
@@ -13,6 +13,12 @@ export interface Exercise {
     muscleGroup?: MuscleGroup[];
     equipmentCategory: Equipment;
     isChecked: boolean;
+}
+
+export enum ExerciseType {
+    STRENGTH = 'STRENGTH',
+    CARDIO = 'CARDIO',
+    STRETCHING = 'STRETCHING'
 }
 
 export interface ExerciseTypes {

@@ -29,102 +29,24 @@
     <!-- 첫 번째 네모박스 -->
     <div class="record-detail-title">
       <div class="title-image">
-        <img src="./images/userProfile.jpeg" alt="사용자 이미지">
+        <img :src="recordWithDetail.trainer?.profileImageUrl" alt="사용자 이미지">
       </div>
       <div class="title-descript">
         <p class="detail-title gray-text"> &nbsp; | </p>
-        <p class="detail-title">&nbsp; 이영훈 트레이너 PT <span class="gray-text"> 수업 기록 | 오후 3:00 ~ 3:50 </span></p>
+        <p class="detail-title">&nbsp; {{recordWithDetail.trainer?.userName}} 트레이너 PT <span class="gray-text"> 수업 기록 | 오후 3:00 ~ 3:50 </span></p>
       </div>
     </div>
 
     <!-- 운동 상세 기록 -->
     <section class="exercise-records">
       <!-- 기록 하나 -->
-      <div class="exercise-record">
-        <div class="record-header">
-          <span class="record-title">레그익스텐션</span>
-          <button class="record-modal-btn">
-            <img src="@/assets/icons/chevron-right.svg" alt="">
-          </button>
-        </div>
-        <div class="record-header-descript">
-          <div>허벅지</div>
-          <div class="gray-text">&nbsp; |&nbsp;종아리</div>
-        </div>
-        <div class="record-sets">
-          <div class="set">
-            <span class="gray-text-ae gap-text">SET1</span>
-            <div class="set-detail">
-              50kg x 10회
-            </div>
-          </div>
-          <div class="set">
-            <span class="gray-text-ae gap-text">SET1</span>
-            <div class="set-detail">
-              50kg x 10회
-            </div>
-          </div>
-          <div class="set">
-            <span class="gray-text-ae gap-text">SET1</span>
-            <div class="set-detail">
-              50kg x 10회
-            </div>
-          </div>
-          <div class="record-sets-feedback">
-            <span class="record-sets-feedback-title font-12">사진/영상</span>
-            <div class="record-image">
-              <div class="record-image-item">
-                <img src="./images/1.png" alt="운동 아이콘">
-              </div>
-              <div class="record-image-item">
-                <img src="./images/1.png" alt="운동 아이콘">
-              </div>
-            </div>
-          </div>
-          <div class="record-sets-feedback">
-            <span class="record-sets-feedback-title font-12">트레이너 피드백</span>
-            <div class="record-sets-feedback-command font-14">
-              상체 세우고 진행해주세요
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--기록 하나-->
-      <!-- 기록 하나 -->
-      <div class="exercise-record">
-        <div class="record-header">
-          <span class="record-title">러닝머신</span>
-          <button class="record-modal-btn">
-            <img src="@/assets/icons/chevron-right.svg" alt="">
-          </button>
-        </div>
-        <div class="record-header-descript">
-          <div>허벅지</div>
-          <div class="gray-text"> &nbsp; | 유산소</div>
-        </div>
-        <div class="record-sets">
-          <div class="set">
-            <span class="gray-text-ae gap-text">거리</span>
-            <div class="set-detail">
-              3.5km
-            </div>
-          </div>
-          <div class="set">
-            <span class="gray-text-ae gap-text">평균속도</span>
-            <div class="set-detail">
-              6
-            </div>
-          </div>
-          <div class="set">
-            <span class="gray-text-ae gap-text">칼로리</span>
-            <div class="set-detail">
-              210kcal
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--기록 하나-->
+      <template v-for="(item, index) in recordWithDetail?.exerciseRecords || []"
+                :key="index"
+      >
+        <RecordDetailInfoCard :exerciseRecord="item"
 
+        ></RecordDetailInfoCard>
+      </template>
     </section>
     <div id="more-popup" class="detail-popup detail-hidden">
       <div class="detail-popup-content">
@@ -156,8 +78,24 @@
 </template>
 
 <script setup lang="ts">
+import {api} from "~/store/api";
+import type {RecordWithDetails} from "~/types/recordDataType";
+
 const route = useRoute();
-const recordId = route.params.recordId;
+const recordIdParam = route.query.recordId;
+const recordId: number = recordIdParam && !isNaN(recordIdParam)?
+    Number(recordIdParam): null;
+
+const recordWithDetail: RecordWithDetails = ref([]);
+
+onMounted(async ()=>{
+  if(recordId) {
+    const response = await useRecord().recordWithDetail({recordId: recordId});
+    recordWithDetail.value = response.result;
+  }
+})
+
+
 </script>
 
 <style scoped>

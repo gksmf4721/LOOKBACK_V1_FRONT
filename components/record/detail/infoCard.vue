@@ -32,10 +32,16 @@
           <span class="record-sets-feedback-title font-12">사진/영상</span>
           <div class="record-image">
             <div class="record-image-item">
-              <img :src="`${apiBase}${item.relativePath}`" alt="운동 아이콘">
+              <CommonImage :src="`${apiBase}${item.relativePath}`"
+                           :alt="'사용자 이미지'"
+                           :errorImage="'/images/userProfile.jpeg'"
+              ></CommonImage>
             </div>
             <div class="record-image-item">
-              <img :src="`${apiBase}${item.relativePath}`" alt="운동 아이콘">
+              <CommonImage :src="`${apiBase}${item.relativePath}`"
+                           :alt="'사용자 이미지'"
+                           :errorImage="'/images/userProfile.jpeg'"
+              ></CommonImage>
             </div>
           </div>
         </div>

@@ -17,8 +17,10 @@
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
-            <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
-            <div class="default-back-title">1월 10일 (금)</div>
+            <button class="back-btn">
+              <img src="@/assets/icons/chevron-left.svg" alt="">
+            </button>
+            <div class="default-back-title">{{recordWithDetail.recordDate}}</div>
           </div>
         </div>
         <div class="default-header-item">
@@ -29,11 +31,14 @@
     <!-- 첫 번째 네모박스 -->
     <div class="record-detail-title">
       <div class="title-image">
-        <img :src="recordWithDetail.trainer?.profileImageUrl" alt="사용자 이미지">
+        <CommonImage :src="recordWithDetail.trainer?.profileImageUrl"
+                     :alt="'사용자 이미지'"
+                     :errorImage="'/images/userProfile.jpeg'"
+        ></CommonImage>
       </div>
       <div class="title-descript">
         <p class="detail-title gray-text"> &nbsp; | </p>
-        <p class="detail-title">&nbsp; {{recordWithDetail.trainer?.userName}} 트레이너 PT <span class="gray-text"> 수업 기록 | 오후 3:00 ~ 3:50 </span></p>
+        <p class="detail-title">&nbsp; {{recordWithDetail.trainer?.userName}} 트레이너 PT <span class="gray-text"> 수업 기록 | {{recordWithDetail?.recordTimeStart}} ~ {{recordWithDetail?.recordTimeEnd}}</span></p>
       </div>
     </div>
 
@@ -95,6 +100,12 @@ onMounted(async ()=>{
   }
 })
 
+const fallbackImage = '/images/1.png' // public 폴더에 있어야 함
+
+function onImageError(event: Event) {
+  const target = event.target as HTMLImageElement
+  target.src = fallbackImage
+}
 
 </script>
 

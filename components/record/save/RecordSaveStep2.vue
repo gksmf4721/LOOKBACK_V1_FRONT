@@ -75,7 +75,7 @@
             <div v-for="detail in item.exerciseRecordDetails" class="set-list" id="set-list-1">
               <div class="set-row">
                 <span>set {{detail.ord}}</span>
-                <input v-model="detail.repsPerSet"
+                <input v-model="detail.weight"
                        type="number"
                        placeholder="횟수" />
                 <button @click="removeSets(item,detail)"

@@ -13,7 +13,6 @@ export const useFileStore = defineStore('file', () =>{
 
         const response = await useFile().uploadFile(formData);
 
-        debugger;
         return response.result;
     }
 

@@ -11,7 +11,6 @@ onMounted(async () => {
   if (!code) {
     console.error("❌ 인증 코드가 없습니다.");
     router.replace(redirect);
-    debugger;
     return;
   }
 
@@ -23,16 +22,13 @@ onMounted(async () => {
     });
     localStorage.setItem('jwtToken', response.jwtToken);
     localStorage.setItem('refreshToken', response.refreshToken);
-
-    // ✅ 회원가입 미완료 상태라면 '/signup'으로 이동
+    localStorage.setItem('userType', response.userType);
+    localStorage.setItem('userId', response.userId);
+    // ✅ 회원가입 미완료 상태라면 '/sign'으로 이동
     if (response.isProfileComplete == 'N') {
       await router.replace('/sign');
     } else {
-      if(response.userType == 'MEMBER'){
-        await router.replace('/');
-      } else {
-        await router.replace('/trainer');
-      }
+      await router.replace('/');
     }
   } catch (err) {
     console.error("❌ 로그인 에러:", err);

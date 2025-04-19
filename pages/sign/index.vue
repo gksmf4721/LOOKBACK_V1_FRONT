@@ -64,11 +64,7 @@ const prevStep = () => {
 };
 
 const movePage = () => {
-  if (userStore.user.userType === "TRAINER") {
-    router.replace("/trainer");
-  } else {
-    console.log("아직 안만듬");
-  }
+    router.replace("/");
 }
 
 const submit = async() => {

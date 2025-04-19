@@ -26,6 +26,8 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: ["plugins"], // 플러그인이 있는 디렉토리를 자동으로 탐지
+    autoImport: true, // 이게 있어야 useLocalStorage를 자동으로 쓸 수 있다
+
   },
   compatibilityDate: '2025-02-25',
   modules: ["@pinia/nuxt"],

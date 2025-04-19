@@ -113,7 +113,7 @@ function onImageError(event: Event) {
 }
 
 const goBack = () => {
-    router.push(`/record/${userId}`); // 기본 홈 또는 지정한 페이지로
+  router.push(`/record/${userId}`); // 기본 홈 또는 지정한 페이지로
 };
 </script>
 

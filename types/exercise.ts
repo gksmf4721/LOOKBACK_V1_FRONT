@@ -34,3 +34,18 @@ export interface ResponseExercise {
     muscleCategories: MuscleCategory[];
     equipments: Equipment[];
 }
+
+interface ExerciseVideo {
+    exerciseVideoId: number;
+    exerciseId: number;
+    videoTitle: string;
+    exerciseVideoUrl: string;
+}
+
+export interface ExerciseDetail {
+    exercise: Exercise;
+    equipment: Equipment[];
+    agonistList?: MuscleGroup[];
+    synergistList?: MuscleGroup[];
+    exerciseVideos?: ExerciseVideo[];
+}

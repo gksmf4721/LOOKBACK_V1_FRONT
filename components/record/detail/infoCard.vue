@@ -3,9 +3,9 @@
     <div class="exercise-record">
       <div class="record-header">
         <span class="record-title">{{exerciseRecord.exerciseName}}</span>
-        <button class="record-modal-btn">
+        <NuxtLink :to="`/exercise/${exerciseRecord.exerciseId}`" class="record-modal-btn">
           <img src="@/assets/icons/chevron-right.svg" alt="">
-        </button>
+        </NuxtLink>
       </div>
       <div class="record-header-descript">
         <div>{{exerciseRecord.agonistMuscleName}}</div>

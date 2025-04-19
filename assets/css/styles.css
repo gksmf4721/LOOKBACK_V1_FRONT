@@ -1901,7 +1901,7 @@ input::placeholder {
   justify-content: space-between;
 }
 .record-image {
-  margin-top: 0px;
+  margin-top: 10px;
   display: flex;
 }
 .record-image-item {

@@ -2,13 +2,13 @@
   <!-- 전체 컨테이너 -->
   <div class="container">
     <!-- 일반회원 -->
-    <header class="default-header" style="display: none;">
+    <header v-if="user.isMember()" class="default-header">
       <div class="default-div">
         <div class="default-title">운동기록</div>
       </div>
     </header>
     <!-- 트레이너일 떄 -->
-    <header class="default-header" >
+    <header v-if="user.isTrainer()" class="default-header" >
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
@@ -97,12 +97,12 @@ import {useRouter} from "vue-router";
 const route = useRoute();
 const router = useRouter();
 const recordStore = useRecordStore();
-
+const user = useUser();
 
 const category = ref([{key: 'record', name: '운동기록'}, {key: 'profile', name: '프로필'}]);
 const selectedCategory = ref('record');
 const id = route.params.id;
-const userType = 'TRAINER';
+const userType = user.getUserType();
 const showBottomPopup = ref(false);
 const showConfirm = ref(false);
 const showSingleConfirm = ref(false);

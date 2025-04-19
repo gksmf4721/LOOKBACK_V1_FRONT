@@ -36,29 +36,27 @@
           </template>
         </div>
         <div class="record-sets-feedback"
-             v-for="(item, index) in exerciseRecord.uploadFiles"
-             :key="index"
         >
           <span class="record-sets-feedback-title font-12">사진/영상</span>
-          <div class="record-image">
-            <div class="record-image-item"
-                 v-if="isImageExtension(item.extention)"
-            >
-              <CommonImage :src="`${apiBase}${item.relativePath}`"
-                           :alt="'사용자 이미지'"
-                           :errorImage="'/images/userProfile.jpeg'"
-              ></CommonImage>
-            </div>
-            <div class="record-image-item"
-                 v-if="isVideoExtension(item.extention)"
-            >
-              <video :src="`${apiBase}${item.relativePath}`"
-                           controls
-                           playsinline
-                           @click="openFullscreen($event)"
-                           style="width: 100%; border-radius: 12px;"
-              ></video>
-            </div>
+          <div class="record-image" >
+              <div class="record-image-item"
+                   v-for="(item, index) in exerciseRecord.uploadFiles"
+                   :key="index"
+              >
+                <CommonImage v-if="isImageExtension(item.extension)"
+                    :src="`${apiBase}${item.relativePath}`"
+                             :alt="'사용자 이미지'"
+                             :errorImage="'/images/userProfile.jpeg'"
+                ></CommonImage>
+                <video v-if="isVideoExtension(item.extension)"
+                    :src="`${apiBase}${item.relativePath}`"
+                             controls
+                             playsinline
+                             @click="openFullscreen($event)"
+                       width="200"
+                       height="auto"
+                ></video>
+              </div>
           </div>
         </div>
         <div v-if="exerciseRecord.memo" class="record-sets-feedback">

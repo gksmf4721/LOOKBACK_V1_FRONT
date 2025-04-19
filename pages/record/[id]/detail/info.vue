@@ -6,7 +6,9 @@
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
-            <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            <button @click="goBack"
+                    class="back-btn"
+            ><img src="@/assets/icons/chevron-left.svg" alt=""></button>
             <div class="default-back-title">1월 10일 (금)</div>
           </div>
         </div>
@@ -17,7 +19,8 @@
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
-            <button class="back-btn">
+            <button @click="goBack"
+                    class="back-btn">
               <img src="@/assets/icons/chevron-left.svg" alt="">
             </button>
             <div class="default-back-title">{{recordWithDetail.recordDate}}</div>
@@ -87,7 +90,9 @@ import {api} from "~/store/api";
 import type {RecordWithDetails} from "~/types/recordDataType";
 
 const route = useRoute();
+const userId = route.params.id;
 const recordIdParam = route.query.recordId;
+const router = useRouter();
 const recordId: number = recordIdParam && !isNaN(recordIdParam)?
     Number(recordIdParam): null;
 
@@ -107,6 +112,9 @@ function onImageError(event: Event) {
   target.src = fallbackImage
 }
 
+const goBack = () => {
+    router.push(`/record/${userId}`); // 기본 홈 또는 지정한 페이지로
+};
 </script>
 
 <style scoped>

@@ -105,6 +105,24 @@ onMounted(async() => {
   exercises.value = result?.strengthExercises;
 
   //TODO 트레이너인 경우 유저가져오기
+  const response = await useRecord().recordWithDetail({recordId: recordId});
+  for(const er of response.result.exerciseRecords){
+
+    const index = exercises.value.findIndex(
+        exercise => exercise.exerciseId == er.exerciseId
+    )
+
+    const exercise = exercises.value[index];
+
+    let updated = [...selectedExerciseRecords.value];
+    let reOrderDetails = [];
+
+    updated.push({...exercise, ord: selectedExerciseRecords.value.length + 1});
+    reOrderDetails = [...updated];
+
+    selectedExerciseRecords.value = reOrderDetails;
+
+  }
 })
 
 const exerciseList = computed(() => {

@@ -27,12 +27,12 @@
           </div>
         </div>
         <div class="default-header-item">
-          <div><img src="@/assets/icons/ellypsis.svg" alt=""></div>
+          <div><img src="@/assets/icons/ellypsis.svg" @click="showBottomPopup = true" alt=""></div>
         </div>
       </div>
     </header>
     <!-- 첫 번째 네모박스 -->
-    <div class="record-detail-title">
+    <div class="record-detail-title" v-if="recordWithDetail.trainer != null">
       <div class="title-image">
         <CommonImage :src="recordWithDetail.trainer?.profileImageUrl"
                      :alt="'사용자 이미지'"
@@ -42,6 +42,14 @@
       <div class="title-descript">
         <p class="detail-title gray-text"> &nbsp; | </p>
         <p class="detail-title">&nbsp; {{recordWithDetail.trainer?.userName}} 트레이너 PT <span class="gray-text"> 수업 기록 | {{recordWithDetail?.recordTimeStart}} ~ {{recordWithDetail?.recordTimeEnd}}</span></p>
+      </div>
+    </div>
+    <div class="record-detail-title" v-if="recordWithDetail.trainer == null">
+      <div class="title-descript">
+        <p class="detail-title">
+          <span class="gray-text"> 개인 운동 기록 | {{recordWithDetail?.recordTimeStart}} ~ {{recordWithDetail?.recordTimeEnd}}
+          </span>
+        </p>
       </div>
     </div>
 
@@ -83,11 +91,28 @@
       </div>
     </div>
   </div>
+  <div>
+    <BottomPopup :show="showBottomPopup" @close="showBottomPopup = false">
+      <div>
+        <h3 class="bottom-popup-title">더보기</h3>
+        <ul class="popup-menu">
+          <li class="popup-item" @click="modifyRecord">
+            <span class="detail-popup-icon">✏️</span> 운동기록 편집
+          </li>
+          <li class="popup-item">
+            <span class="detail-popup-icon">🗑️</span> 운동기록 삭제
+          </li>
+
+        </ul>
+      </div>
+    </BottomPopup>
+  </div>
 </template>
 
 <script setup lang="ts">
 import {api} from "~/store/api";
 import type {RecordWithDetails} from "~/types/recordDataType";
+import BottomPopup from "~/components/popup/BottomPopup.vue";
 
 const route = useRoute();
 const userId = route.params.id;
@@ -97,6 +122,7 @@ const recordId: number = recordIdParam && !isNaN(recordIdParam)?
     Number(recordIdParam): null;
 
 const recordWithDetail: RecordWithDetails = ref([]);
+const showBottomPopup = ref(false);
 
 onMounted(async ()=>{
   if(recordId) {
@@ -106,7 +132,6 @@ onMounted(async ()=>{
 })
 
 const fallbackImage = '/images/1.png' // public 폴더에 있어야 함
-
 function onImageError(event: Event) {
   const target = event.target as HTMLImageElement
   target.src = fallbackImage
@@ -115,6 +140,10 @@ function onImageError(event: Event) {
 const goBack = () => {
   router.push(`/record/${userId}`); // 기본 홈 또는 지정한 페이지로
 };
+
+const modifyRecord = () =>{
+  router.push(`/record/${userId}/save/${recordId}`);
+}
 </script>
 
 <style scoped>

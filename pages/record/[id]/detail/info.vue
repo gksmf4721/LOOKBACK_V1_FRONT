@@ -99,7 +99,7 @@
           <li class="popup-item" @click="modifyRecord">
             <span class="detail-popup-icon">✏️</span> 운동기록 편집
           </li>
-          <li class="popup-item">
+          <li class="popup-item" @click="removeConfirm">
             <span class="detail-popup-icon">🗑️</span> 운동기록 삭제
           </li>
 
@@ -107,12 +107,27 @@
       </div>
     </BottomPopup>
   </div>
+  <ConfirmModal
+      :show="showConfirm"
+      :title="'이 운동기록을 삭제할까요?'"
+      :message="`기록을 삭제하면 연결된 트레이너도 이 운동기록을 볼 수 없어요.`"
+      @close="showConfirm = false"
+      @confirm="removeRecord"
+  />
+  <SingleConfirmModal
+      :show="showSingleConfirm"
+      :title="'기록 삭제'"
+      :message="singleConfirmMessage"
+      @confirm="onSingleConfirm"
+  />
 </template>
 
 <script setup lang="ts">
 import {api} from "~/store/api";
 import type {RecordWithDetails} from "~/types/recordDataType";
 import BottomPopup from "~/components/popup/BottomPopup.vue";
+import ConfirmModal from "~/components/popup/ConfirmModal.vue";
+import SingleConfirmModal from "~/components/popup/SingleConfirmModal.vue";
 
 const route = useRoute();
 const userId = route.params.id;
@@ -120,10 +135,11 @@ const recordIdParam = route.query.recordId;
 const router = useRouter();
 const recordId: number = recordIdParam && !isNaN(recordIdParam)?
     Number(recordIdParam): null;
-
 const recordWithDetail: RecordWithDetails = ref([]);
 const showBottomPopup = ref(false);
-
+const showConfirm = ref(false);
+const showSingleConfirm = ref(false);
+const singleConfirmMessage = ref('기록이 삭제 되었습니다.');
 onMounted(async ()=>{
   if(recordId) {
     const response = await useRecord().recordWithDetail({recordId: recordId});
@@ -141,8 +157,29 @@ const goBack = () => {
   router.push(`/record/${userId}`); // 기본 홈 또는 지정한 페이지로
 };
 
+/*기록 수정*/
 const modifyRecord = () =>{
   router.push(`/record/${userId}/save/${recordId}`);
+}
+
+/*기록 삭제 팝업*/
+const removeConfirm = () => {
+  showConfirm.value = true;
+}
+
+/*기록 삭제*/
+const removeRecord = async () => {
+  const response = await useRecord().removeRecord({recordId: recordId});
+  if (response.status !== 200) {
+    singleConfirmMessage.value = '오류가 발생했습니다.';
+  }
+    showBottomPopup.value = false;
+    showConfirm.value = false;
+    showSingleConfirm.value = true;
+}
+
+const onSingleConfirm = () => {
+  router.push(`/record/${userId}`);
 }
 </script>
 

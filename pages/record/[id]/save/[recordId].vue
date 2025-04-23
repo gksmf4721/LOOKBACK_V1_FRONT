@@ -61,6 +61,7 @@ import {useRouter} from "vue-router";
 import {useToast} from "vue-toastification";
 import ConfirmModal from "~/components/popup/ConfirmModal.vue";
 import RecordShare from "~/components/record/save/RecordShare.vue";
+import {useRecord} from "#imports";
 const route = useRoute();
 const router = useRouter();
 
@@ -418,6 +419,7 @@ const reOrder = (updated: Array) => {
     ord: idx + 1
   }))
 }
+
 
 </script>
 

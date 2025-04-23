@@ -37,6 +37,15 @@ export const useRecord  = () => {
         }
     }
 
+    const removeRecord = async (data: Object) => {
+        try {
+            const response = await api().post(`/record/remove`, data)
+            return response;
+        } catch (e) {
+            console.error("[removeRecord] 요청실패 : ", e);
+        }
+    }
 
-    return {recordList, recordSave, recordDetailSave, recordWithDetail}
+
+    return {recordList, recordSave, recordDetailSave, recordWithDetail, removeRecord}
 }

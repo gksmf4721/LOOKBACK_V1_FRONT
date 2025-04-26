@@ -24,6 +24,7 @@ onMounted(async () => {
     localStorage.setItem('refreshToken', response.refreshToken);
     localStorage.setItem('userType', response.userType);
     localStorage.setItem('userId', response.userId);
+
     // ✅ 회원가입 미완료 상태라면 '/sign'으로 이동
     if (response.isProfileComplete == 'N') {
       await router.replace('/sign');

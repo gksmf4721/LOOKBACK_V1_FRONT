@@ -13,7 +13,9 @@
       </div>
     </header>
     <!-- Date Section -->
-    <Sign1></Sign1>
+    <Sign1 :userType="userType"
+           @setUserType="setUserType"
+    ></Sign1>
     <Sign2></Sign2>
     <SignComplete></SignComplete>
     <footer class="fixed-footer-btn">
@@ -40,7 +42,11 @@ import SignComplete from "~/components/user/sign/SignComplete.vue";
 const router = useRouter();
 const userStore = useUserStore();
 const toast = useToast();
+const userType = ref('MEMBER');
 
+const setUserType = (selectUserType: string) => {
+  userType.value = selectUserType;
+}
 
 // ✅ setTimeout으로 step1을 먼저 숨기고 step2를 등장시킴
 const nextStep = () => {
@@ -80,9 +86,11 @@ const submit = async() => {
   const response = await useUser().updateBasicInfo({
     weight: userStore.weight,
     height: userStore.height,
-    userType: userStore.selectedType === "트레이너" ? "TRAINER" : "MEMBER",
+    userType: userType.value,
   })
   userStore.setUser(response.result);
+  useUser().setUserType(response.result.userType);
+
 
   const step2 = document.querySelector('.step2');
   const step3 = document.querySelector('.step3');

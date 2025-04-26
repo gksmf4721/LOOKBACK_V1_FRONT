@@ -12,7 +12,7 @@
         <div class="user-add-text " v-html="finalMessage">
         </div>
         <!-- 초대 링크 및 다른 앱 공유 버튼 -->
-        <div class="invite-buttons margin-top-30">
+        <div class="invite-buttons margin-top-30" v-if="useUser().isTrainer()">
           <button class="invite-option" @click="copyLink">링크 복사</button>
           <button class="invite-option" @click="shareLink">공유</button>
         </div>
@@ -31,20 +31,30 @@
 <script setup lang="ts">
 import {computed} from "vue";
 import {useToast} from "vue-toastification";
-const toast = useToast();
-const router = useRouter();
 
+const toast = useToast;
+const router = useRouter();
 const prop = defineProps({
   userId: {
     type: Number,
     default: 0
+  },
+  member: {
+    type: Object,
+    default: {}
   }
 })
 
 const finalMessage = computed(() => {
-  //TODO 나중에 회원과 트레이너의 메세지를 바꿔주기
-  return `<p>김지혜 회원님 계정에서도 이 기록이 추가되었어요.</p>
+  if (useUser().isTrainer()){
+    return `<p>${props.member.userName} 회원님 계정에서도 이 기록이 추가되었어요.</p>
           <p>아래 링크를 복사해 회원님에게 알려주세요!</p>`;
+  }
+  // TODO 반대로 현재 트레이너에게 공유하기
+  if (useUser().isMember()){
+    return `<p>트레이너님께 공유는 준비중입니다!</p>
+          <p>잠시 기다려 주세요!</p>`;
+  }
 })
 
 const copyLink = async () => {

@@ -4,7 +4,7 @@
       <div class="default-title">회원관리</div>
       <div class="default-header-item2">
         <div class="default-icon-1">
-          <button class="back-btn"><img src="@/assets/icons/person-add.svg" alt=""></button>
+          <button @click="moveMemberAdd"class="back-btn"><img src="@/assets/icons/person-add.svg" alt=""></button>
         </div>
         <div>
           <button @click="handleSearch" class="back-btn"><img src="@/assets/icons/search.svg" alt=""></button>
@@ -41,6 +41,7 @@ const memberStore = useMemberStore();
 const headerType = ref(false);
 const userName = ref('');
 
+const emits = defineEmits(['moveMemberAdd']);
 
 const handleSearch = () => {
   headerType.value = !headerType.value;
@@ -51,6 +52,9 @@ watch(userName,(newValue) => {
   memberStore.setSearchUserName(newValue);
 });
 
+const moveMemberAdd = () => {
+  emits('moveMemberAdd');
+}
 
 
 </script>

@@ -10,5 +10,14 @@ export const useTrainer = () => {
         }
     }
 
-    return {cancelTraining}
+    const addMember = async (data) => {
+        try {
+            const response = await api().post(`/trainer/addMember`,data);
+            return response;
+        } catch (e) {
+            console.error("[addMember] 요청실패 : ", e);
+        }
+    }
+
+    return { cancelTraining, addMember }
 }

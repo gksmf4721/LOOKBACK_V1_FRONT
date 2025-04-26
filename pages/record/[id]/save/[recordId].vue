@@ -38,13 +38,13 @@
     <RecordSaveStep3
         v-if="step == 3"
         v-model:selectedExerciseRecords="selectedExerciseRecords"
-
         @onMove="onMove"
     ></RecordSaveStep3>
-    <RecordShare v-if="step == 4"
+    <RecordSaveFinish v-if="step == 4"
                  :userId="userId"
+                 :member="memberInfo"
     >
-    </RecordShare>
+    </RecordSaveFinish>
   </div>
 </template>
 
@@ -53,15 +53,13 @@ import {useExercise} from "~/composables/useExercise";
 import type {ExerciseRecord} from "~/types/exerciseRecord";
 import type {Exercise} from "~/types/exercise";
 import {ExerciseDetailTypes, type ExerciseRecordDetail} from "~/types/exerciseRecordDetail";
-import {exercise} from "~/store/exercise";
 import {FileType} from "~/types/file";
 import {useFileStore} from "~/store/file";
-import {api} from "~/store/api";
 import {useRouter} from "vue-router";
-import {useToast} from "vue-toastification";
-import ConfirmModal from "~/components/popup/ConfirmModal.vue";
-import RecordShare from "~/components/record/save/RecordShare.vue";
+import RecordShare from "~/components/record/save/RecordSaveFinish.vue";
 import {useRecord} from "#imports";
+import type {User} from "~/types/userDataType";
+import RecordSaveFInish from "~/components/record/save/RecordSaveFinish.vue";
 const route = useRoute();
 const router = useRouter();
 
@@ -89,7 +87,7 @@ const exercises = ref([]);
 const strengthExercises = ref([]);
 const cardioExercises = ref([]);
 const stretchingExercises = ref([]);
-
+const memberInfo = ref({});
 
 onMounted(async() => {
   const result = await useExercise().getResponseExercise();
@@ -105,7 +103,6 @@ onMounted(async() => {
   //첫 운동 리스트는 근력이며 카테고리는 전체
   exercises.value = result?.strengthExercises;
 
-  //TODO 트레이너인 경우 유저가져오기
   const response = await useRecord().recordWithDetail({recordId: recordId});
   for(const er of response.result.exerciseRecords){
 
@@ -124,6 +121,12 @@ onMounted(async() => {
     selectedExerciseRecords.value = reOrderDetails;
 
   }
+
+  // TODO 트레이너인 경우 유저가져오기
+  // 일단 둘다 가져왔음
+  const findUser: User = await useUser().findUser({userId: userId});
+  memberInfo.value = findUser.result;
+
 })
 
 const exerciseList = computed(() => {
@@ -378,10 +381,8 @@ const submit = async () => {
   });
 
   //TODO 회원, 트레이너 다름
-  debugger;
   if(response.status == 200) {
     step.value = 4;
-
   }
 }
 

@@ -24,36 +24,37 @@
       </div>
     </header>
     <!-- 카테고리 메뉴 -->
-    <nav class="category-nav">
+    <nav v-if="user.isTrainer()" class="category-nav">
       <button v-for="item in category"
               :class="{active : item.key == selectedCategory}"
               @click="selectCategory(item.key)"
               class="category-btn">{{ item.name }}</button>
     </nav>
+    <template v-if="selectedBottomCategory == 'list'">
+      <ExerciseRecord
+          :selectedCategory="selectedCategory"
+          :userId="id"
+          :userType="userType"
+          v-model:records="records"
 
-    <ExerciseRecord
-        :selectedCategory="selectedCategory"
-        :userId="id"
-        :userType="userType"
-        v-model:records="records"
-
-        @moveDetail="moveDetail"
-    >
-    </ExerciseRecord>
-    <Profile :selectedCategory="selectedCategory" :member="member">
-    </Profile>
+          @moveDetail="moveDetail"
+      >
+      </ExerciseRecord>
+      <Profile :selectedCategory="selectedCategory" :member="member">
+      </Profile>
+    </template>
     <!-- 정렬 모달 -->
+    <MyPage v-if="selectedBottomCategory == 'page'" ></MyPage>
+    <FooterType1 v-if="user.isMember()"
+                 :category="bottomCategory"
+                 :selectedCategory="selectedBottomCategory"
+                 @selectCategory="selectBottomCategory"></FooterType1>
     <div id="sortModal" class="record-sort-modal hidden">
       <ul class="sort-options">
         <li class="sort-option" data-value="recommend">가나다순</li>
         <li class="sort-option" data-value="newest">최근 수업순</li>
       </ul>
     </div>
-    <!-- 하단 고정 푸터 -->
-    <footer class="fixed-footer" style="display: none;">
-      <div class="footer-item active" data-target="회원관리">운동기록</div>
-      <div class="footer-item" data-target="마이페이지">마이페이지</div>
-    </footer>
     <!--popup-->
     <div>
       <BottomPopup :show="showBottomPopup" @close="showBottomPopup = false">
@@ -94,12 +95,16 @@ import BottomPopup from "~/components/popup/BottomPopup.vue";
 import ConfirmModal from "~/components/popup/ConfirmModal.vue";
 import SingleConfirmModal from "~/components/popup/SingleConfirmModal.vue";
 import {useRouter} from "vue-router";
+import FooterType1 from "~/components/common/footer/FooterType1.vue";
+import MyPage from "~/components/user/MyPage.vue";
 const route = useRoute();
 const router = useRouter();
 const recordStore = useRecordStore();
 const user = useUser();
 
 const category = ref([{key: 'record', name: '운동기록'}, {key: 'profile', name: '프로필'}]);
+const bottomCategory = ref([{ name : '회원관리', key : 'list'},{name : '마이페이지', key : 'page'}]);
+const selectedBottomCategory = ref('list');
 const selectedCategory = ref('record');
 const id = route.params.id;
 const userType = user.getUserType();
@@ -120,6 +125,11 @@ onMounted(async () => {
 
 const selectCategory = (category) => {
   selectedCategory.value = category;
+}
+
+const selectBottomCategory = (key) => {
+  console.log(key);
+  selectedBottomCategory.value = key
 }
 
 const onConfirmDisconnect = async () => {

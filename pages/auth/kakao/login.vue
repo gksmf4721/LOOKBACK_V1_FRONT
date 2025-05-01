@@ -12,6 +12,9 @@
       </h1>
     </div>
     <button @click="loginWithKakao" class="kakao-btn">카카오로 시작하기</button>
+    <button @click="testLogin(2)" class="kakao-btn">트레이너 테스트 </button>
+    <button @click="testLogin(3)" class="kakao-btn">멤버 A 테스트</button>
+    <button @click="testLogin(4)" class="kakao-btn">멤버 B 테스트</button>
   </div>
 </template>
 
@@ -22,6 +25,18 @@ const loginWithKakao = async () => {
   const response = await api().get(`/auth/kakao/login`);
   window.location.href = response;
 };
+
+const testLogin: void = async (id: number) => {
+  const response = await api().get(`/testLogin`, {userId : id});
+
+  localStorage.setItem('jwtToken', response.jwtToken);
+  localStorage.setItem('refreshToken', response.refreshToken);
+  localStorage.setItem('userType', response.userType);
+  localStorage.setItem('userId', response.userId);
+
+  await useRouter().replace('/');
+
+}
 </script>
 
 <style scoped>

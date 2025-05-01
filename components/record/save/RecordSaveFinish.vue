@@ -32,7 +32,7 @@
 import {computed} from "vue";
 import {useToast} from "vue-toastification";
 
-const toast = useToast;
+const toast = useToast();
 const router = useRouter();
 const prop = defineProps({
   userId: {

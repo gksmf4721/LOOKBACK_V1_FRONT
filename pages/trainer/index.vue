@@ -4,29 +4,46 @@
     <!-- 상단 타이틀 (검색창 포함) -->
     <ManageHeader @moveMemberAdd="moveMemberAdd"></ManageHeader>
     <!-- 카테고리 메뉴 -->
-    <MemberList></MemberList>
+    <MemberList v-if="selectedCategory == 'list'"></MemberList>
+    <MyPage v-if="selectedCategory == 'page'" ></MyPage>
     <!-- 하단 고정 푸터 -->
-    <footer class="fixed-footer">
-      <div v-for="item in category" @click="selectCategory(item)" class="footer-item" :class="{active : selectedCategory == item}" >{{ item }}</div>
-    </footer>
-  </div>
+    <FooterType1 :category="category"
+                 :selectedCategory="selectedCategory"
+                 @selectCategory="selectCategory"></FooterType1>
+    </div>
 </template>
 
 <script setup lang="ts">
 import ManageHeader from "~/components/user/manage/ManageHeader.vue";
-import {api} from "~/store/api";
 import {useMemberStore} from "~/store/member";
 import MemberList from "~/components/user/trainer/MemberList.vue";
 import {useRouter} from "vue-router";
+import FooterType1 from "~/components/common/footer/FooterType1.vue";
+import MyPage from "~/components/user/MyPage.vue";
 const router = useRouter();
 const memberStore = useMemberStore();
-const category = ref(['회원관리','마이페이지']);
-const selectedCategory = ref('회원관리');
+const category = ref([{ name : '회원관리', key : 'list'},{name : '마이페이지', key : 'page'}]);
+const selectedCategory = ref('list');
 
-const selectCategory = (category) => {
-  selectedCategory.value = category;
+//lifeCycle
+onMounted(async () => {
+  const data = {sortBy : ''}
+  const response = await useMember().trainerMember(data);
+  memberStore.setMembers(response.result.list);
+  memberStore.setMembersCount(response.result.list.length);
+});
+
+//method
+const selectSort = async (sort) => {
+  const data = {sortBy : sort}
+  const response = await useMember().trainerMember(data);
+  memberStore.setMembers(response.result.list);
+  memberStore.setMembersCount(response.result.list.length);
+  clickSort();
 }
-
+const selectCategory = (key: string) => {
+  selectedCategory.value = key;
+}
 const moveMemberAdd = () => {
   router.push('/trainer/invite');
 }

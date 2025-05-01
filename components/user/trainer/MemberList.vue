@@ -48,29 +48,13 @@
   import {computed} from "vue";
 
   //data
-  const memberStore = useMemberStore();
   const isShowSortModal = ref(false);
   const sortTypes = ref([
       {name: '가나다순', sort: 'userName'},
       {name: '최근 수업순', sort: 'recent'}
   ])
 
-  //lifeCycle
-  onMounted(async () => {
-    const data = {sortBy : ''}
-    const response = await useMember().trainerMember(data);
-    memberStore.setMembers(response.result.list);
-    memberStore.setMembersCount(response.result.list.length);
-  });
-
-  //method
-  const selectSort = async (sort) => {
-    const data = {sortBy : sort}
-    const response = await useMember().trainerMember(data);
-    memberStore.setMembers(response.result.list);
-    memberStore.setMembersCount(response.result.list.length);
-    clickSort();
-  }
+  const memberStore = useMemberStore();
 
   const clickSort = () => {
     isShowSortModal.value = !isShowSortModal.value;

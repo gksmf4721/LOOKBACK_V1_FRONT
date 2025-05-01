@@ -4,7 +4,7 @@ import { useRuntimeConfig } from "#app";
 
 export const api = defineStore("api", () => {
     const config = useRuntimeConfig();
-
+    const router = useRouter();
     // ✅ Axios 인스턴스 생성
     const api: AxiosInstance = axios.create({
         baseURL: config.public.apiBase, // 환경변수에서 API Base URL 가져옴
@@ -21,6 +21,12 @@ export const api = defineStore("api", () => {
             const refreshToken = localStorage.getItem("refreshToken");
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
+            } else {
+                //로그인이 필요한 경우
+                toast.error('로그인이 필요합니다. 2초 뒤 로그인 화면으로 이동합니다.');
+                setTimeout(() => {
+                    router.push('/auth/kakao/login');
+                }, 2000); // 2000ms = 2초
             }
             if (refreshToken) {
                 config.headers["Refresh-Token"] = refreshToken;
@@ -40,6 +46,7 @@ export const api = defineStore("api", () => {
             return response.data;
         } catch (error) {
             console.error("❌ GET 요청 실패:", error);
+            return error.response.data
             throw error;
         }
     };
@@ -50,7 +57,7 @@ export const api = defineStore("api", () => {
             const response = await api.post(url, data, config);
             return response.data;
         } catch (error) {
-            console.error("❌ POST 요청 실패:", error);
+            return error.response.data
             throw error;
         }
     };

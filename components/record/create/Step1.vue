@@ -4,7 +4,7 @@
       <div class="default-div">
         <div>
           <div class="back-btn-box-text">
-            <button class="back-btn"><img src="@/assets/icons/chevron-left.svg" alt=""></button>
+            <button class="back-btn"><img @click="goBack" src="@/assets/icons/chevron-left.svg" alt=""></button>
             <div class="default-back-title">운동기록 추가</div>
           </div>
         </div>
@@ -84,6 +84,9 @@
       router.replace(`/record/${userId}/save/${response.result.recordId}`);
     }
   }
+  const goBack = () => {
+    router.push(`/record/${userId}`); // 기본 홈 또는 지정한 페이지로
+  };
 
 </script>
 

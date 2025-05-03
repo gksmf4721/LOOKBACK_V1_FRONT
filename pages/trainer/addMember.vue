@@ -9,16 +9,18 @@
             <div class="profile-image">
               <CommonImage :src="trainer?.profileImageUrl"
                            :alt="'사용자 이미지'"
-                           :errorImage="'/images/userProfile.jpeg'"
+                           :errorImage="'@/assets/images/1.png'"
               ></CommonImage>
             </div>
-            </div>
+          </div>
         <div class="user-add-text ">
           {{description}}
         </div>
         <!-- 초대 링크 및 다른 앱 공유 버튼 -->
         <div class="invite-buttons margin-top-30">
-          <button class="invite-option" style="background: black; color: white"
+          <button v-if="!trainer.hasOtherTraining"
+                  class="invite-option"
+                  style="background: black; color: white"
                   @click="addMember">수락하기</button>
         </div>
       </div>
@@ -44,7 +46,7 @@ const router = useRouter();
 const showSingleConfirm = ref(false);
 const confirmModalMessage = ref('');
 const trainerId = route.query.code;
-const trainer: Trainer = ref({});
+const trainer: Ref<Trainer> = ref({});
 
 onMounted( async ()=>{
   const id = useUser().getId();
@@ -69,7 +71,7 @@ onMounted( async ()=>{
 });
 
 const description = computed(() => {
-  if ( trainer.value?.trainingStatus == null ) {
+  if ( !trainer.value?.hasOtherTraining ) {
     return `${trainer.value?.trainerName} 트레이너님이 연결을 요청했어요.
 트레이너님과 계정을 연결하면 개인 운동 기록과 PT 수업 기록을 같이 볼 수 있어요.`
   } else {
@@ -79,19 +81,19 @@ const description = computed(() => {
 })
 
 
-const addMember = () => {
-  confirmModalMessage.value = `${trainer.value?.trainerName} 트레이너님과 연결이 완료되었어요`;
+const addMember = async () => {
   showSingleConfirm.value = true;
 
-  // TODO 이미 연결 트레이너 확인
-  // TODO 트레이너 이미지 변경
-  //const response = await useTrainer().addMember({trainerId : trainerId});
-/*  if (response.status === 200){
+  const response = await useTrainer().addMember({trainerId : trainerId});
+
+  if (!response.result.alreadyTraining){
+    confirmModalMessage.value = `${trainer.value?.trainerName} 트레이너님과 연결이 완료되었어요`;
     showSingleConfirm.value = true;
 
   } else {
-
-  }*/
+    confirmModalMessage.value = `이미 ${trainer.value?.trainerName} 트레이너님과 연결되어 있어요`;
+    showSingleConfirm.value = true;
+  }
 }
 
 const onSingleConfirm = () => {

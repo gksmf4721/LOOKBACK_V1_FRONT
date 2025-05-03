@@ -34,8 +34,12 @@ import {useToast} from "vue-toastification";
 
 const toast = useToast();
 const router = useRouter();
-const prop = defineProps({
+const props = defineProps({
   userId: {
+    type: Number,
+    default: 0
+  },
+  recordId: {
     type: Number,
     default: 0
   },
@@ -58,17 +62,17 @@ const finalMessage = computed(() => {
 })
 
 const copyLink = async () => {
-  const link = `${window.location.origin}/record`
+  const link = `${window.location.origin}/record/${userId}/detail/info?recordId=${recordId}`
   await navigator.clipboard.writeText(link)
   toast.success('링크가 복사되었습니다!')
 }
 
 const shareLink = () => {
-  const url = `${window.location.origin}/record`
+  const url = `${window.location.origin}/record/${userId}/detail/info?recordId=${recordId}`
   if (navigator.share) {
     navigator.share({
       title: '운동 기록 공유',
-      text: '~~회원님과의 수업 기록을 확인해보세요!',
+      text: '회원님과의 수업 기록을 확인해보세요!',
       url: url,
     }).catch((err) => {
       console.error('공유 실패:', err)

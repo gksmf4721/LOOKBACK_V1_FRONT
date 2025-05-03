@@ -45,8 +45,15 @@ export const api = defineStore("api", () => {
             const response = await api.get(url, { params });
             return response.data;
         } catch (error) {
-            console.error("❌ GET 요청 실패:", error);
-            return error.response.data
+            if (error.response.status === 401) {
+                //로그인이 필요한 경우
+                alert('로그인이 필요합니다. 2초 뒤 로그인 화면으로 이동합니다.');
+                setTimeout(() => {
+                    router.push('/auth/kakao/login');
+                }, 2000); // 2000ms = 2초
+            } else {
+                return error.response
+            }
             throw error;
         }
     };

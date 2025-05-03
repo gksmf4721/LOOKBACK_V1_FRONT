@@ -31,7 +31,6 @@
 
 <script setup lang="ts">
 import {useRouter} from "#vue-router";
-import {computed} from "vue";
 import {useUserStore} from "~/store/user";
 import Sign1 from "~/components/user/sign/Sign1.vue";
 import {useUser} from "~/composables/useUser";

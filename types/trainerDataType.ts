@@ -7,4 +7,5 @@ export interface Trainer {
     trainingStatus: TrainingStatus;
     studentName: string;
     studentNickName: string;
+    hasOtherTraining: boolean;
 }

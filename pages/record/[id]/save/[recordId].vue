@@ -42,6 +42,7 @@
     ></RecordSaveStep3>
     <RecordSaveFinish v-if="step == 4"
                  :userId="userId"
+                 :recordId="recordId"
                  :member="memberInfo"
     >
     </RecordSaveFinish>

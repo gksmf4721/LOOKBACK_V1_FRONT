@@ -1,13 +1,7 @@
 <template>
   <div>
-    <div v-if="selectedCategory == 'record'
-    && records.length == 0" class="no-records-message">
-      <span>
-      등록된 기록이 없습니다.
-      </span>
-    </div>
     <div v-if="selectedCategory == 'record'" class="search-filters default-nav border-none">
-      <div v-if="records.length != 0" class="filter-buttons scrollable">
+      <div class="filter-buttons scrollable">
         <button v-for="item in subCategory"
                 :class="{active : item.key == selectedSubCategory}"
                 @click="selectSubCategory(item.key)"
@@ -33,8 +27,12 @@
     </div>
     <div v-if="selectedCategory == 'record'" class="record-container">
       <!-- 기록이 없을 경우 표시될 문구 -->
-
-
+      <div v-if="selectedCategory == 'record'
+    && records.length == 0" class="no-records-message">
+        <span>
+        등록된 기록이 없습니다.
+        </span>
+      </div>
       <div class="record-item-container" data-id="record-1">
         <!-- 기록 정보 -->
         <template v-for="item in records">

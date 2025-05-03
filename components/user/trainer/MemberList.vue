@@ -46,9 +46,17 @@
 <script setup lang="ts">
   import {useMemberStore} from "~/store/member";
   import {computed} from "vue";
+  const props = defineProps({
+    isShowSortModal: {
+      type: Boolean,
+      default: false
+    }
+  })
 
-  //data
-  const isShowSortModal = ref(false);
+  const emits = defineEmits(['selectSort','clickSort']);
+  const selectSort = (sort: string) => {
+    emits('selectSort',sort);
+  }
   const sortTypes = ref([
       {name: '가나다순', sort: 'userName'},
       {name: '최근 수업순', sort: 'recent'}
@@ -57,9 +65,8 @@
   const memberStore = useMemberStore();
 
   const clickSort = () => {
-    isShowSortModal.value = !isShowSortModal.value;
+    emits('clickSort');
   }
-
   //getters
   const membersList = computed(() => {
     if(memberStore.useFilter){

@@ -4,7 +4,10 @@
     <!-- 상단 타이틀 (검색창 포함) -->
     <ManageHeader @moveMemberAdd="moveMemberAdd"></ManageHeader>
     <!-- 카테고리 메뉴 -->
-    <MemberList v-if="selectedCategory == 'list'"></MemberList>
+    <MemberList v-if="selectedCategory == 'list'"
+                :isShowSortModal="isShowSortModal"
+                @clickSort="clickSort"
+                @selectSort="selectSort"></MemberList>
     <MyPage v-if="selectedCategory == 'page'" ></MyPage>
     <!-- 하단 고정 푸터 -->
     <FooterType1 :category="category"
@@ -24,6 +27,8 @@ const router = useRouter();
 const memberStore = useMemberStore();
 const category = ref([{ name : '회원관리', key : 'list'},{name : '마이페이지', key : 'page'}]);
 const selectedCategory = ref('list');
+//data
+const isShowSortModal = ref(false);
 
 //lifeCycle
 onMounted(async () => {
@@ -46,6 +51,9 @@ const selectCategory = (key: string) => {
 }
 const moveMemberAdd = () => {
   router.push('/trainer/invite');
+}
+const clickSort = () => {
+  isShowSortModal.value = !isShowSortModal.value;
 }
 
 </script>

@@ -31,4 +31,11 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-02-25',
   modules: ["@pinia/nuxt"],
+
+  // ✅ Vite 설정 추가
+  vite: {
+    define: {
+      global: 'window'  // 브라우저에서 global을 window로 매핑
+    }
+  }
 })
